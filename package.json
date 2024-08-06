@@ -1,0 +1,14 @@
+{
+  "name": "chronos",
+  "version": "1.0.0",
+  "description": "A time registering system for Nedralia AB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jan Svensson",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1667.0"
+  }
+}
