@@ -101,6 +101,14 @@ exports.handler = async (event) => {
   const from = event.from;
   const to = event.to;
 
+  // Option to how to get the time report:
+  // 1. Hours day by day
+  // 2. Total hours in a range of days
+  // 3. Total hours per week
+  // 4. Total hours per month
+
+  // Possibility to get a full printed report with all time entries and summary.
+
   if (!clientId) {
     return {
       statusCode: 400,

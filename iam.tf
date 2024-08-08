@@ -28,7 +28,8 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
         Action = [
           "dynamodb:PutItem",
           "dynamodb:Query",
-          "dynamodb:Scan"
+          "dynamodb:Scan",
+          "dynamodb:DeleteItem"
         ]
         Effect   = "Allow"
         Resource = "arn:aws:dynamodb:${var.region}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.time_entries.name}"

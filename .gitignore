@@ -1,7 +1,11 @@
 .terraform
 node_modules
 .terraform.lock.hcl
-lambda.zip
 terraform.tfstate
 terraform.tfstate.backup
-get_total_time.zip
+
+# Ignore all .tfstate files
+*.tfstate
+
+# Ignore zip files
+*.zip
