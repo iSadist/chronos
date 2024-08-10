@@ -2,7 +2,8 @@ const AWS = require('aws-sdk');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
-    const { clientId, duration, date } = event;
+    const body = JSON.parse(event.body);
+    const { clientId, duration, date } = body;
 
     const params = {
         TableName: 'TimeEntries',

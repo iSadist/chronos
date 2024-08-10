@@ -1,15 +1,15 @@
-data "archive_file" "lambda_zip" {
+data "archive_file" "register_zip" {
   type        = "zip"
-  source_file  = "index.js"
-  output_path = "lambda.zip"
+  source_file  = "register.js"
+  output_path = "register.zip"
 }
 
-resource "aws_lambda_function" "chronos_lambda" {
-  filename      = "lambda.zip"
-  function_name = "ChronosFunction"
+resource "aws_lambda_function" "register_lambda" {
+  filename      = "register.zip"
+  function_name = "RegisterFunction"
   role          = aws_iam_role.lambda_exec_role.arn
-  handler       = "index.handler"
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+  handler       = "register.handler"
+  source_code_hash = data.archive_file.register_zip.output_base64sha256
   runtime       = "nodejs16.x"
 }
 

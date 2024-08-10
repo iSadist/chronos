@@ -97,9 +97,9 @@ const getTimeEntriesByDateRange = async (clientId, from, to) => {
 }
 
 exports.handler = async (event) => {
-  const clientId = event.clientId;
-  const from = event.from;
-  const to = event.to;
+
+  const body = JSON.parse(event.body);
+  const { clientId, from, to } = body;
 
   // Option to how to get the time report:
   // 1. Hours day by day

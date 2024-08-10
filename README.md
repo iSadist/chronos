@@ -18,3 +18,11 @@ A basic time-rapporting system in AWS. Below is a quick guide on how to set it u
 curl -X POST -H "Content-Type: application/json" \
      -d '{"clientId": "client1", "duration": 120}' \
      https://<api-id>.execute-api.<region>.amazonaws.com/dev/time-entry
+
+# Deploy steps
+
+The terraform project need to be initialized first.
+`terraform init`
+
+Deploy the project and perform the resource changes by using apply.
+`terraform apply`

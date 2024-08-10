@@ -113,7 +113,8 @@ async function deleteClient(clientId) {
 }
 
 exports.handler = async (event) => {
-    const { clientId, action } = event;
+    const body = JSON.parse(event.body);
+    const { action, clientId } = body;
 
     if (action === 'create') {
         return await createClient(clientId);
