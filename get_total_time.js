@@ -27,16 +27,34 @@ const groupData = (items) => {
   }, {});
 }
 
-const getAllTimeEntries = async (clientId) => {
+const mapRecordToClient = (items) => {
+  return items.reduce((acc, item) => {
+    if (acc[item.ClientId]) {
+      acc[item.ClientId].push(item);
+    } else {
+      acc[item.ClientId] = [item];
+    }
+
+    return acc;
+  }, {});
+}
+
+const getAllTimeEntries = async (clientId, mode) => {
   try {
     items = await getAllItems();
 
-    // Group time entries by client ID
-    const groupedData = groupData(items);
+    let data = undefined;
+
+    if (mode === 'daily') {
+      data = mapRecordToClient(items);
+    } else {
+      // Group time entries by client ID
+      data = groupData(items);
+    }
 
     if (clientId) {
       const response = {
-        hours: groupedData[clientId] || 0,
+        data: data[clientId] || 0,
       }
   
       return {
@@ -47,7 +65,7 @@ const getAllTimeEntries = async (clientId) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(groupedData),
+      body: JSON.stringify(data),
     };
   } catch (error) {
     console.error('Could not retrieve time entries. Error: ', error);
@@ -59,7 +77,7 @@ const getAllTimeEntries = async (clientId) => {
   }
 }
 
-const getTimeEntriesByDateRange = async (clientId, from, to) => {
+const getTimeEntriesByDateRange = async (clientId, from, to, mode) => {
   // Try to convert the date strings to timestamps
   const fromDate = Date.parse(from);
   const toDate = Date.parse(to);
@@ -76,17 +94,23 @@ const getTimeEntriesByDateRange = async (clientId, from, to) => {
 
     const filteredData = items.filter(item => {
       const itemDate = Date.parse(item.Date);
-
       return itemDate >= fromDate && itemDate <= toDate;
     });
 
-    const groupedData = groupData(filteredData);
+    let data = undefined;
+
+    if (mode === 'daily') {
+      data = mapRecordToClient(filteredData);
+    } else {
+      // Group time entries by client ID
+      data = groupData(filteredData);
+    }
 
     if (clientId) {
       const response = {
         from: from,
         to: to,
-        hours: groupedData[clientId] || 0,
+        data: data[clientId] || 0,
       }
       
       return {
@@ -97,7 +121,7 @@ const getTimeEntriesByDateRange = async (clientId, from, to) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(groupedData),
+      body: JSON.stringify(data),
     };
   } catch(error) {
     console.error('Could not retrieve time entries. Error: ', error);
@@ -111,10 +135,15 @@ const getTimeEntriesByDateRange = async (clientId, from, to) => {
 
 exports.handler = async (event) => {
   const body = JSON.parse(event.body);
-  const { clientId, from, to } = body;
+  const {
+    clientId,
+    from,
+    to,
+    mode
+  } = body;
 
-  // Option to how to get the time report:
-  // 1. Hours day by day
+  // Option to how to get the time report (mode):
+  // "daily": Hours day by day
   // 2. Total hours in a range of days
   // 3. Total hours per week
   // 4. Total hours per month
@@ -123,9 +152,9 @@ exports.handler = async (event) => {
 
   // If from and to are not provided, get all time entries for the client
   if (!from && !to) {
-    return getAllTimeEntries(clientId);
+    return getAllTimeEntries(clientId, mode);
   }
 
   // If from and to are provided, get time entries for the client within the specified range
-  return getTimeEntriesByDateRange(clientId, from, to);
+  return getTimeEntriesByDateRange(clientId, from, to, mode);
 };
