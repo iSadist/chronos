@@ -34,13 +34,20 @@ const getAllTimeEntries = async (clientId) => {
     // Group time entries by client ID
     const groupedData = groupData(items);
 
-    const response = {
-      hours: groupedData[clientId] || 0,
+    if (clientId) {
+      const response = {
+        hours: groupedData[clientId] || 0,
+      }
+  
+      return {
+        statusCode: 200,
+        body: JSON.stringify(response),
+      };
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify(response),
+      body: JSON.stringify(groupedData),
     };
   } catch (error) {
     console.error('Could not retrieve time entries. Error: ', error);
@@ -67,24 +74,30 @@ const getTimeEntriesByDateRange = async (clientId, from, to) => {
   try {
     const items = await getAllItems();
 
-    // Filter time entries by client ID and date range
     const filteredData = items.filter(item => {
       const itemDate = Date.parse(item.Date);
 
-      return item.ClientId === clientId && itemDate >= fromDate && itemDate <= toDate;
+      return itemDate >= fromDate && itemDate <= toDate;
     });
 
     const groupedData = groupData(filteredData);
 
-    const response = {
-      from: from,
-      to: to,
-      hours: groupedData[clientId] || 0,
+    if (clientId) {
+      const response = {
+        from: from,
+        to: to,
+        hours: groupedData[clientId] || 0,
+      }
+      
+      return {
+        statusCode: 200,
+        body: JSON.stringify(response),
+      };
     }
-    
+
     return {
       statusCode: 200,
-      body: JSON.stringify(response),
+      body: JSON.stringify(groupedData),
     };
   } catch(error) {
     console.error('Could not retrieve time entries. Error: ', error);
@@ -97,7 +110,6 @@ const getTimeEntriesByDateRange = async (clientId, from, to) => {
 }
 
 exports.handler = async (event) => {
-
   const body = JSON.parse(event.body);
   const { clientId, from, to } = body;
 
@@ -108,13 +120,6 @@ exports.handler = async (event) => {
   // 4. Total hours per month
 
   // Possibility to get a full printed report with all time entries and summary.
-
-  if (!clientId) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: 'Client ID is required.' })
-    };
-  }
 
   // If from and to are not provided, get all time entries for the client
   if (!from && !to) {
