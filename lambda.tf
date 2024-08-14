@@ -28,7 +28,7 @@ resource "aws_lambda_function" "get_total_time_lambda" {
   runtime          = "nodejs16.x"
 }
 
-// Add lambda to handle clients (Create, Get, Delete)
+// MARK: Clients Lambda
 
 data "archive_file" "client_zip" {
   type        = "zip"
@@ -36,11 +36,29 @@ data "archive_file" "client_zip" {
   output_path = "client.zip"
 }
 
-resource "aws_lambda_function" "client_lambda" {
+resource "aws_lambda_function" "client_get_lambda" {
   filename         = "client.zip"
-  function_name    = "ClientFunction"
+  function_name    = "ClientGetFunction"
   role             = aws_iam_role.lambda_exec_role.arn
   handler          = "client.handler"
+  source_code_hash = data.archive_file.client_zip.output_base64sha256
+  runtime          = "nodejs16.x"
+}
+
+resource "aws_lambda_function" "client_create_lambda" {
+  filename         = "client.zip"
+  function_name    = "ClientCreateFunction"
+  role             = aws_iam_role.lambda_exec_role.arn
+  handler          = "client.create"
+  source_code_hash = data.archive_file.client_zip.output_base64sha256
+  runtime          = "nodejs16.x"
+}
+
+resource "aws_lambda_function" "client_delete_lambda" {
+  filename         = "client.zip"
+  function_name    = "ClientDeleteFunction"
+  role             = aws_iam_role.lambda_exec_role.arn
+  handler          = "client.delete"
   source_code_hash = data.archive_file.client_zip.output_base64sha256
   runtime          = "nodejs16.x"
 }

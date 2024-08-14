@@ -112,24 +112,32 @@ async function deleteClient(clientId) {
     }
 }
 
-exports.handler = async (event) => {
-    const body = JSON.parse(event.body);
-    const { action, clientId } = body;
-
-    if (action === 'create') {
-        return await createClient(clientId);
-    }
-
-    if (action === 'get') {
-        return await getAllClients();
-    }
-
-    if (action === 'delete') {
-        return await deleteClient(clientId);
-    }
-
-    return {
-        statusCode: 400,
-        message: 'Invalid action.'
-    };
+exports.handler = async () => {
+    return await getAllClients();
 };
+
+exports.create = async (event) => {
+    const { clientId } = event.queryStringParameters;
+
+    if (!clientId) {
+        return {
+            statusCode: 400,
+            message: 'Client ID is required.'
+        };
+    }
+
+    return await createClient(clientId);
+};
+
+exports.delete = async (event) => {
+    const { clientId } = event.queryStringParameters;
+
+    if (!clientId) {
+        return {
+            statusCode: 400,
+            message: 'Client ID is required.'
+        };
+    }
+
+    return await deleteClient(clientId);
+}

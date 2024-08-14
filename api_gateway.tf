@@ -19,7 +19,7 @@ resource "aws_apigatewayv2_integration" "register_integration" {
 
 resource "aws_apigatewayv2_route" "register_route" {
   api_id    = aws_apigatewayv2_api.chronos_api.id
-  route_key = "GET /entries"
+  route_key = "POST /entries"
   target    = "integrations/${aws_apigatewayv2_integration.register_integration.id}"
 }
 
@@ -56,24 +56,66 @@ resource "aws_lambda_permission" "api_gateway" {
 // MARK: Client Lambda
 
 # New integration for client Lambda
-resource "aws_apigatewayv2_integration" "client_lambda_integration" {
+resource "aws_apigatewayv2_integration" "client_get_lambda_integration" {
   api_id           = aws_apigatewayv2_api.chronos_api.id
   integration_type = "AWS_PROXY"
-  integration_uri  = aws_lambda_function.client_lambda.arn
+  integration_uri  = aws_lambda_function.client_get_lambda.arn
 }
 
-# New route for client Lambda
-resource "aws_apigatewayv2_route" "client_lambda_route" {
+resource "aws_apigatewayv2_integration" "client_create_lambda_integration" {
+  api_id           = aws_apigatewayv2_api.chronos_api.id
+  integration_type = "AWS_PROXY"
+  integration_uri  = aws_lambda_function.client_create_lambda.arn
+}
+
+resource "aws_apigatewayv2_integration" "client_delete_lambda_integration" {
+  api_id           = aws_apigatewayv2_api.chronos_api.id
+  integration_type = "AWS_PROXY"
+  integration_uri  = aws_lambda_function.client_delete_lambda.arn
+}
+
+# New route for GET request
+resource "aws_apigatewayv2_route" "get_client_route" {
   api_id    = aws_apigatewayv2_api.chronos_api.id
   route_key = "GET /clients"
-  target    = "integrations/${aws_apigatewayv2_integration.client_lambda_integration.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.client_get_lambda_integration.id}"
+}
+
+# New route for POST request
+resource "aws_apigatewayv2_route" "post_client_route" {
+  api_id    = aws_apigatewayv2_api.chronos_api.id
+  route_key = "POST /clients"
+  target    = "integrations/${aws_apigatewayv2_integration.client_create_lambda_integration.id}"
+}
+
+# New route for DELETE request
+resource "aws_apigatewayv2_route" "delete_client_route" {
+  api_id    = aws_apigatewayv2_api.chronos_api.id
+  route_key = "DELETE /clients"
+  target    = "integrations/${aws_apigatewayv2_integration.client_delete_lambda_integration.id}"
 }
 
 # Permissions for API Gateway to invoke client Lambda
-resource "aws_lambda_permission" "client_lambda_permission" {
+resource "aws_lambda_permission" "client_get_lambda_permission" {
   statement_id  = "AllowAPIGatewayInvokeClientLambda"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.client_lambda.function_name
+  function_name = aws_lambda_function.client_get_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.chronos_api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "client_create_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeClientLambda"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.client_create_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.chronos_api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "client_delete_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeClientLambda"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.client_delete_lambda.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.chronos_api.execution_arn}/*/*"
 }
