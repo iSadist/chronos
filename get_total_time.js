@@ -1,14 +1,23 @@
 const AWS = require('aws-sdk');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
-const getAllItems = async () => {
+const getAllItems = async (userId) => {
   const params = {
     TableName: 'TimeEntries',
   };
 
   try {
     const data = await dynamodb.scan(params).promise();
-    return data.Items;
+
+    // Filter out the items that don't belong to the user
+    const userItems = data.Items.filter(item => item.UserId === userId);
+
+    // Sort according to the date
+    userItems.sort((a, b) => {
+      return new Date(a.Date) - new Date(b.Date);
+    });
+
+    return userItems;
   } catch (error) {
     console.error('Could not retrieve items. Error: ', error);
     return [];
@@ -39,9 +48,9 @@ const mapRecordToClient = (items) => {
   }, {});
 }
 
-const getAllTimeEntries = async (clientId, mode) => {
+const getAllTimeEntries = async (clientId, mode, userId) => {
   try {
-    items = await getAllItems();
+    items = await getAllItems(userId);
 
     let data = undefined;
 
@@ -77,7 +86,7 @@ const getAllTimeEntries = async (clientId, mode) => {
   }
 }
 
-const getTimeEntriesByDateRange = async (clientId, from, to, mode) => {
+const getTimeEntriesByDateRange = async (clientId, from, to, mode, userId) => {
   // Try to convert the date strings to timestamps
   const fromDate = Date.parse(from);
   const toDate = Date.parse(to);
@@ -90,7 +99,7 @@ const getTimeEntriesByDateRange = async (clientId, from, to, mode) => {
   }
 
   try {
-    const items = await getAllItems();
+    const items = await getAllItems(userId);
 
     const filteredData = items.filter(item => {
       const itemDate = Date.parse(item.Date);
@@ -139,8 +148,27 @@ exports.handler = async (event) => {
     clientId,
     from,
     to,
-    mode
+    mode,
+    userId,
   } = body;
+
+  // Validate the input
+
+  // The client ID is required
+  if (!clientId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'Client ID is required.' }),
+    };
+  }
+
+  // The user ID is required
+  if (!userId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'User ID is required.' }),
+    };
+  }
 
   // Option to how to get the time report (mode):
   // "daily": Hours day by day
@@ -152,9 +180,9 @@ exports.handler = async (event) => {
 
   // If from and to are not provided, get all time entries for the client
   if (!from && !to) {
-    return getAllTimeEntries(clientId, mode);
+    return getAllTimeEntries(clientId, mode, userId);
   }
 
   // If from and to are provided, get time entries for the client within the specified range
-  return getTimeEntriesByDateRange(clientId, from, to, mode);
+  return getTimeEntriesByDateRange(clientId, from, to, mode, userId);
 };

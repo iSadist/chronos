@@ -41,7 +41,7 @@ resource "aws_apigatewayv2_integration" "get_total_time_integration" {
 
 resource "aws_apigatewayv2_route" "get_total_time_route" {
   api_id    = aws_apigatewayv2_api.chronos_api.id
-  route_key = "GET /getTotalTime"
+  route_key = "GET /entries"
   target    = "integrations/${aws_apigatewayv2_integration.get_total_time_integration.id}"
 }
 

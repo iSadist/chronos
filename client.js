@@ -1,14 +1,27 @@
 const AWS = require('aws-sdk');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
-const getAllItems = async () => {
+/**
+ * Returns all items from the TimeEntries table
+ * @param {*} userId The user ID
+ * @returns List of items
+ * 
+ * @example
+ * const items = await getAllItems('1234');
+ *
+ */
+const getAllItems = async (userId) => {
     const params = {
         TableName: 'TimeEntries',
     };
-  
+
     try {
         const data = await dynamo.scan(params).promise();
-        return data.Items;
+
+        // Filter out the items that don't belong to the user
+        const userItems = data.Items.filter(item => item.UserId === userId);
+
+        return userItems;
     } catch (error) {
         console.error('Could not retrieve items. Error: ', error);
         return [];
@@ -17,11 +30,12 @@ const getAllItems = async () => {
 
 /**
  * Returns a list of all clients
+ * @param {*} userId The user ID
  * @returns Endpoint response
  */
-async function getAllClients() {
+async function getAllClients(userId) {
     try {
-        const allItems = await getAllItems();
+        const allItems = await getAllItems(userId);
         const clients = allItems.map(item => item.ClientId);
 
         // Remove duplicates
@@ -44,16 +58,18 @@ async function getAllClients() {
 /**
  * Create a new client by adding a new time entry with a duration of 0
  * @param {*} clientId The client ID
+ * @param {*} userId The user ID
  * @returns Endpoint response
  */
-async function createClient(clientId) {
+async function createClient(clientId, userId) {
     const params = {
         TableName: 'TimeEntries',
         Item: {
             EntryId: `${clientId}-${Date.now()}`,
             ClientId: clientId,
             Duration: 0,
-            Date: '2020-01-01'
+            Date: '2020-01-01',
+            UserId: userId,
         }
     };
 
@@ -76,9 +92,10 @@ async function createClient(clientId) {
 /**
  * Deletes all time entries for a client
  * @param {*} clientId The client ID
+ * @param {*} userId The user ID
  * @returns Endpoint response
  */
-async function deleteClient(clientId) {
+async function deleteClient(clientId, userId) {
     try {
         // Delete all time entries for the client
         const params = {
@@ -87,7 +104,7 @@ async function deleteClient(clientId) {
 
         const data = await dynamo.scan(params).promise();
 
-        const items = data.Items.filter(item => item.ClientId === clientId);
+        const items = data.Items.filter(item => item.ClientId === clientId && item.UserId === userId);
 
         for (const item of items) {
             await dynamo.delete({
@@ -112,12 +129,21 @@ async function deleteClient(clientId) {
     }
 }
 
-exports.handler = async () => {
-    return await getAllClients();
+exports.handler = async (event) => {
+    const { userId } = event.queryStringParameters;
+
+    if(!userId) {
+        return {
+            statusCode: 400,
+            message: 'User ID is required.'
+        };
+    }
+
+    return await getAllClients(userId);
 };
 
 exports.create = async (event) => {
-    const { clientId } = event.queryStringParameters;
+    const { clientId, userId } = event.queryStringParameters;
 
     if (!clientId) {
         return {
@@ -126,16 +152,30 @@ exports.create = async (event) => {
         };
     }
 
-    return await createClient(clientId);
+    if(!userId) {
+        return {
+            statusCode: 400,
+            message: 'User ID is required.'
+        };
+    }
+
+    return await createClient(clientId, userId);
 };
 
 exports.delete = async (event) => {
-    const { clientId } = event.queryStringParameters;
+    const { clientId, userId } = event.queryStringParameters;
 
     if (!clientId) {
         return {
             statusCode: 400,
             message: 'Client ID is required.'
+        };
+    }
+
+    if(!userId) {
+        return {
+            statusCode: 400,
+            message: 'User ID is required.'
         };
     }
 

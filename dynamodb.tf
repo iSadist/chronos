@@ -22,6 +22,11 @@ resource "aws_dynamodb_table" "time_entries" {
     type = "S"
   }
 
+  attribute {
+    name = "UserId"
+    type = "S"
+  }
+
   global_secondary_index {
     name            = "ClientIdIndex"
     hash_key        = "ClientId"
@@ -37,6 +42,12 @@ resource "aws_dynamodb_table" "time_entries" {
   global_secondary_index {
     name            = "DurationIndex"
     hash_key        = "Duration"
+    projection_type = "ALL"
+  }
+
+  global_secondary_index {
+    name            = "UserIdIndex"
+    hash_key        = "UserId"
     projection_type = "ALL"
   }
 }

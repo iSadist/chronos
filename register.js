@@ -3,7 +3,7 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
     const body = JSON.parse(event.body);
-    const { clientId, duration, date } = body;
+    const { clientId, duration, date, userId } = body;
 
     const params = {
         TableName: 'TimeEntries',
@@ -11,7 +11,8 @@ exports.handler = async (event) => {
             EntryId: `${clientId}-${Date.now()}`,
             ClientId: clientId,
             Duration: duration,
-            Date: date
+            Date: date,
+            UserId: userId,
         }
     };
 
