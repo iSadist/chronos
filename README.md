@@ -19,6 +19,12 @@ curl -X POST -H "Content-Type: application/json" \
      -d '{"clientId": "client1", "duration": 120}' \
      https://<api-id>.execute-api.<region>.amazonaws.com/dev/time-entry
 
+# Front end
+Tools and frameworks
+1. NextJS
+2. AWS Cognito
+3. AWS Amplify or AWS S3 + Cloudfront
+
 # Deploy steps
 
 The terraform project need to be initialized first.
