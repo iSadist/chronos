@@ -36,6 +36,10 @@
   gap: 25px;
 }
 
+.paragraph {
+  margin: auto;
+}
+
 .addButton {
   min-width: 2rem;
   min-height: 2rem;
@@ -46,9 +50,20 @@
   cursor: pointer;
 }
 
+.neutralButton {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.25rem;
+  background-color: #0f0f0f;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 .deleteButton {
-  width: 25px;
-  height: 25px;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.25rem;
   background-color: red;
   color: #fff;
   border-radius: 5px;

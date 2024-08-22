@@ -25,15 +25,32 @@ function Button(props: ButtonProps) {
   );
 }
 
+// A neutral button with text.
+function NeutralButton(props: ButtonProps) {
+  const onClick = () => {
+    props.action();
+  }
+
+  return (
+    <>
+      <button className={styles.neutralButton} onClick={onClick}>
+        {props.text}
+      </button>
+    </>
+  );
+}
+
 function DeleteButton(props: ButtonProps) {
   const onClick = () => {
     props.action();
   }
 
   return (
-    <button className={styles.deleteButton} onClick={onClick}>
-      -
-    </button>
+    <>
+      <button className={styles.deleteButton} onClick={onClick}>
+        {props.text || "-"}
+      </button>
+    </>
   );
 }
 
@@ -43,14 +60,26 @@ type RowItemProps = {
 };
 
 function RowItem(props: RowItemProps) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
   const handleButtonAction = () => {
+    setConfirmDelete(true);
+  }
+
+  const handleDelete = () => {
     props.delete(props.item.name);
+  }
+
+  const cancelDelete = () => {
+    setConfirmDelete(false);
   }
 
   return (
     <div className={styles.rowItem}>
-      <p>{props.item.name}</p>
-      <DeleteButton action={handleButtonAction} />
+      <p className={styles.paragraph}>{props.item.name}</p>
+      {confirmDelete && <NeutralButton text="x" action={cancelDelete} />}
+      {confirmDelete && <DeleteButton text="Confirm delete" action={handleDelete} />}
+      {!confirmDelete && <DeleteButton action={handleButtonAction} />}
     </div>
   );
 }
