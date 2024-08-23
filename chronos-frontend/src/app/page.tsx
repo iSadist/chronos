@@ -77,8 +77,8 @@ function RowItem(props: RowItemProps) {
   return (
     <div className={styles.rowItem}>
       <p className={styles.paragraph}>{props.item.name}</p>
-      {confirmDelete && <NeutralButton text="x" action={cancelDelete} />}
       {confirmDelete && <DeleteButton text="Confirm delete" action={handleDelete} />}
+      {confirmDelete && <NeutralButton text="x" action={cancelDelete} />}
       {!confirmDelete && <DeleteButton action={handleButtonAction} />}
     </div>
   );
@@ -116,6 +116,12 @@ function AddRowView(props: AddRowViewProps) {
 export default function Home() {
   const [items, setItems] = useState<Array<ItemData>>([]);
 
+  function onSubmit (event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    console.log('Form submitted');
+  }
+
   return (
     <main className={styles.main}>
       <header className={styles.header}>
@@ -143,8 +149,26 @@ export default function Home() {
         <h2>Register time</h2>
         <p>Register time on a project.</p>
 
+        <form className={styles.registerForm} onSubmit={onSubmit}>
+          <label>
+            Project / Client
+            <select>
+              {items.map((item, index) => {
+                return <option key={index} value={item.name}>{item.name}</option>
+              })}
+            </select>
+          </label>
+          <label>
+            Time spent
+            <input type="number" />
+          </label>
+          <label>
+            Date
+            <input type="date" />
+          </label>
+          <Button text="Submit" action={() => {}} />
+        </form>
       </section>
-
 
       <section className={styles.section}>
         <h2>Time report</h2>

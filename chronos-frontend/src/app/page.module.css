@@ -32,12 +32,15 @@
 
 .rowItem {
   display: flex;
-  padding: 1rem;
+  justify-content: space-between;
+  padding: 0.5rem 0;
   gap: 25px;
+  width: 100%;
 }
 
 .paragraph {
-  margin: auto;
+  font-weight: bold;
+  font-size: 22px;
 }
 
 .addButton {
@@ -68,4 +71,13 @@
   color: #fff;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.registerForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
 }
