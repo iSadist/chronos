@@ -28,6 +28,13 @@ const getAllItems = async (userId) => {
     }
 }
 
+async function getFullClientList(userId) {
+    const allItems = await getAllItems(userId);
+    const clients = allItems.map(item => item.ClientId);
+    const unique = Array.from(new Set(clients));
+    return unique;
+}
+
 /**
  * Returns a list of all clients
  * @param {*} userId The user ID
@@ -35,22 +42,18 @@ const getAllItems = async (userId) => {
  */
 async function getAllClients(userId) {
     try {
-        const allItems = await getAllItems(userId);
-        const clients = allItems.map(item => item.ClientId);
-
-        // Remove duplicates
-        const unique = Array.from(new Set(clients));
+        const clients = await getFullClientList(userId);
 
         return {
             statusCode: 200,
-            body: JSON.stringify(unique)
+            body: JSON.stringify(clients)
         };
     } catch (error) {
         console.error(error);
 
         return {
             statusCode: 500,
-            message: 'Could not retrieve clients.'
+            body: JSON.stringify({ message: 'Could not retrieve clients.'}),
         };
     }
 }
@@ -97,6 +100,17 @@ async function createClient(clientId, userId) {
  */
 async function deleteClient(clientId, userId) {
     try {
+        // Get all existing clients
+        const clients = await getFullClientList(userId);
+
+        // Check if the client exists
+        if (!clients.includes(clientId)) {
+            return {
+                statusCode: 404,
+                body: JSON.stringify(`Client does not exist: ${clientId}.`),
+            };
+        }
+
         // Delete all time entries for the client
         const params = {
             TableName: 'TimeEntries',
@@ -159,6 +173,16 @@ exports.create = async (event) => {
         };
     }
 
+    // Get the current client list
+    const clients = await getFullClientList(userId);
+
+    if (clients.includes(clientId)) {
+        return {
+            statusCode: 400,
+            message: `Client already exists: ${clientId}`
+        };
+    }
+
     return await createClient(clientId, userId);
 };
 
@@ -179,5 +203,5 @@ exports.delete = async (event) => {
         };
     }
 
-    return await deleteClient(clientId);
+    return await deleteClient(clientId, userId);
 }
