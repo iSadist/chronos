@@ -80,14 +80,14 @@ async function createClient(clientId, userId) {
         await dynamo.put(params).promise();
         return {
             statusCode: 200,
-            message: `New client recorded: ${clientId}`
+            body: JSON.stringify({ message: `New client recorded: ${clientId}`}),
         };
     } catch (error) {
         console.error(error);
 
         return {
             statusCode: 500,
-            message: 'Could not create client.'
+            body: JSON.stringify({ message: 'Could not create client.'}),
         };
     }
 }
@@ -107,7 +107,7 @@ async function deleteClient(clientId, userId) {
         if (!clients.includes(clientId)) {
             return {
                 statusCode: 404,
-                body: JSON.stringify(`Client does not exist: ${clientId}.`),
+                body: JSON.stringify({ message: `Client does not exist: ${clientId}.`}),
             };
         }
 
@@ -131,14 +131,14 @@ async function deleteClient(clientId, userId) {
 
         return {
             statusCode: 200,
-            message: 'Client deleted.'
+            body: JSON.stringify({ message: 'Client deleted.'}),
         };
     } catch(error) {
         console.error(error);
 
         return {
             statusCode: 500,
-            message: 'Could not delete client.'
+            body: JSON.stringify({ message: 'Could not delete client.'}),
         };
     }
 }
@@ -149,7 +149,7 @@ exports.handler = async (event) => {
     if(!userId) {
         return {
             statusCode: 400,
-            message: 'User ID is required.'
+            body: JSON.stringify({ message: 'User ID is required.'}),
         };
     }
 
@@ -162,14 +162,14 @@ exports.create = async (event) => {
     if (!clientId) {
         return {
             statusCode: 400,
-            message: 'Client ID is required.'
+            body: JSON.stringify({ message: 'Client ID is required.'}),
         };
     }
 
     if(!userId) {
         return {
             statusCode: 400,
-            message: 'User ID is required.'
+            body: JSON.stringify({ message: 'User ID is required.'}),
         };
     }
 
@@ -179,7 +179,7 @@ exports.create = async (event) => {
     if (clients.includes(clientId)) {
         return {
             statusCode: 400,
-            message: `Client already exists: ${clientId}`
+            body: JSON.stringify({ message: `Client already exists: ${clientId}`}),
         };
     }
 
@@ -192,14 +192,14 @@ exports.delete = async (event) => {
     if (!clientId) {
         return {
             statusCode: 400,
-            message: 'Client ID is required.'
+            body: JSON.stringify({ message: 'Client ID is required.'}),
         };
     }
 
     if(!userId) {
         return {
             statusCode: 400,
-            message: 'User ID is required.'
+            body: JSON.stringify({ message: 'User ID is required.'}),
         };
     }
 
