@@ -129,52 +129,53 @@ export default function Home() {
         <p>Chronos is a time tracking application.</p>
       </header>
 
-      <section className={styles.section}>
-        <h2>Clients</h2>
-        <p>View and manage clients.</p>
+      <div className={styles.content}>
+        <section className={styles.section}>
+          <h2>Clients</h2>
+          <p>View and manage clients.</p>
 
-        {/* Render a RowItem for every item */}
-        {items.map((item, index) => {
-          return <RowItem key={index} item={item} delete={(name) => {
-            setItems(items.filter((item) => item.name !== name));
+          {/* Render a RowItem for every item */}
+          {items.map((item, index) => {
+            return <RowItem key={index} item={item} delete={(name) => {
+              setItems(items.filter((item) => item.name !== name));
+            }} />
+          })}
+
+          <AddRowView addItem={(name) => {
+            setItems([...items, { name }]);
           }} />
-        })}
+        </section>
 
-        <AddRowView addItem={(name) => {
-          setItems([...items, { name }]);
-        }} />
-      </section>
+        <section className={styles.section}>
+          <h2>Register time</h2>
+          <p>Register time on a project.</p>
 
-      <section className={styles.section}>
-        <h2>Register time</h2>
-        <p>Register time on a project.</p>
+          <form className={styles.registerForm} onSubmit={onSubmit}>
+            <label>
+              Project / Client
+              <select>
+                {items.map((item, index) => {
+                  return <option key={index} value={item.name}>{item.name}</option>
+                })}
+              </select>
+            </label>
+            <label>
+              Time spent
+              <input type="number" />
+            </label>
+            <label>
+              Date
+              <input type="date" />
+            </label>
+            <Button text="Submit" action={() => {}} />
+          </form>
+        </section>
 
-        <form className={styles.registerForm} onSubmit={onSubmit}>
-          <label>
-            Project / Client
-            <select>
-              {items.map((item, index) => {
-                return <option key={index} value={item.name}>{item.name}</option>
-              })}
-            </select>
-          </label>
-          <label>
-            Time spent
-            <input type="number" />
-          </label>
-          <label>
-            Date
-            <input type="date" />
-          </label>
-          <Button text="Submit" action={() => {}} />
-        </form>
-      </section>
-
-      <section className={styles.section}>
-        <h2>Time report</h2>
-        <p>Get a time report for a project</p>
-
-      </section>
+        <section className={styles.section}>
+          <h2>Time report</h2>
+          <p>Get a time report for a project</p>
+        </section>
+      </div>
     </main>
   );
 }
