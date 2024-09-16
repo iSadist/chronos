@@ -100,10 +100,26 @@ function AddRowView(props: AddRowViewProps) {
     setName('');
   }
 
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  }
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleButtonAction();
+    }
+  }
+
   return (
     <div className={styles.rowItem}>
       <h3>Add new client</h3>
-      <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+      <input
+        className={styles.field}
+        type="text"
+        value={name}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+      />
       <Button action={handleButtonAction} />
     </div>
   );
