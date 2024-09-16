@@ -125,18 +125,73 @@ function AddRowView(props: AddRowViewProps) {
   );
 }
 
-// TODO: Use AWS Cognito for authentication
-// Implement a login page
-// Implement a registration page
-
-export default function Home() {
-  const [items, setItems] = useState<Array<ItemData>>([]);
+function RegisterTimeView({
+  items,
+}: { items: Array<ItemData> }) {
+  const [hours, setHours] = useState(0);
 
   function onSubmit (event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     console.log('Form submitted');
   }
+
+  function handleQuickSelection (event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    const newValue = parseInt(event.currentTarget.textContent || '0');
+    console.log('Quick selection', newValue);
+
+    // Set the hours to the value of the button
+    setHours(newValue);
+  }
+
+  function onChange (event: React.ChangeEvent<HTMLInputElement>) {
+    const newValue = parseInt(event.target.value);
+    setHours(newValue)
+  }
+
+  return (
+    <>
+      <h2>Register time</h2>
+      <p>Register time on a project.</p>
+
+      <form className={styles.registerForm} onSubmit={onSubmit}>
+        <label>
+          Project / Client
+          <select className={styles.select}>
+            {items.map((item, index) => {
+              return <option key={index} value={item.name}>{item.name}</option>
+            })}
+          </select>
+        </label>
+        <div className={styles.inputRow}>
+          <label>
+            Time spent
+          </label>
+          <input className={styles.field} type="number" onChange={onChange} value={hours} />
+          <button className={styles.neutralButton} onClick={handleQuickSelection} >1</button>
+          <button className={styles.neutralButton} onClick={handleQuickSelection}>2</button>
+          <button className={styles.neutralButton} onClick={handleQuickSelection}>4</button>
+          <button className={styles.neutralButton} onClick={handleQuickSelection}>8</button>
+        </div>
+        <div className={styles.inputRow}>
+          <label>
+            Date
+          </label>
+          <input className={styles.field} type="date" />
+        </div>
+        <Button text="Submit" action={() => {}} />
+      </form>
+    </>
+  );
+}
+
+// TODO: Use AWS Cognito for authentication
+// Implement a login page
+// Implement a registration page
+
+export default function Home() {
+  const [items, setItems] = useState<Array<ItemData>>([]);
 
   return (
     <main className={styles.main}>
@@ -163,28 +218,7 @@ export default function Home() {
         </section>
 
         <section className={styles.section}>
-          <h2>Register time</h2>
-          <p>Register time on a project.</p>
-
-          <form className={styles.registerForm} onSubmit={onSubmit}>
-            <label>
-              Project / Client
-              <select>
-                {items.map((item, index) => {
-                  return <option key={index} value={item.name}>{item.name}</option>
-                })}
-              </select>
-            </label>
-            <label>
-              Time spent
-              <input type="number" />
-            </label>
-            <label>
-              Date
-              <input type="date" />
-            </label>
-            <Button text="Submit" action={() => {}} />
-          </form>
+          <RegisterTimeView items={items} />
         </section>
 
         <section className={styles.section}>
