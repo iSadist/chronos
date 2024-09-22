@@ -1,6 +1,17 @@
 'use client';
 
 import React, { useState } from "react";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
 import styles from "./page.module.css";
 
 type ButtonProps = {
@@ -151,7 +162,7 @@ function RegisterTimeView({
   }
 
   return (
-    <>
+    <ThemeProvider theme={darkTheme}>
       <h2>Register time</h2>
       <p>Register time on a project.</p>
 
@@ -165,6 +176,11 @@ function RegisterTimeView({
           </select>
         </label>
         <div className={styles.inputRow}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateCalendar views={['day']} />
+          </LocalizationProvider>
+        </div>
+        <div className={styles.inputRow}>
           <label>
             Time spent
           </label>
@@ -174,15 +190,9 @@ function RegisterTimeView({
           <button className={styles.neutralButton} onClick={handleQuickSelection}>4</button>
           <button className={styles.neutralButton} onClick={handleQuickSelection}>8</button>
         </div>
-        <div className={styles.inputRow}>
-          <label>
-            Date
-          </label>
-          <input className={styles.field} type="date" />
-        </div>
         <Button text="Submit" action={() => {}} />
       </form>
-    </>
+    </ThemeProvider>
   );
 }
 
