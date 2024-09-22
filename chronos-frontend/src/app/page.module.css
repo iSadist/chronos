@@ -40,15 +40,6 @@
   border-radius: 1rem;
 }
 
-.rowItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  gap: 25px;
-  width: 100%;
-}
-
 .field {
   align-self: stretch;
   flex-grow: 1;
@@ -97,41 +88,42 @@
   font-size: 22px;
 }
 
-.addButton {
-  min-width: 2rem;
-  min-height: 2rem;
-  padding: 0.25rem 0.25rem;
-  background-color: green;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.neutralButton {
-  min-width: 2rem;
-  min-height: 2rem;
-  padding: 0.25rem 0.25rem;
-  background-color: #0f0f0f;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.deleteButton {
-  min-width: 2rem;
-  min-height: 2rem;
-  padding: 0.25rem 0.25rem;
-  background-color: red;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
 .registerForm {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+}
+
+.reportForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+}
+
+.reportHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.reportBody {
+  width: 100%
+}
+
+.reportRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   width: 100%;
 }

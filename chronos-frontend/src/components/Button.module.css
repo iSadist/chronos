@@ -1,0 +1,29 @@
+.addButton {
+    min-width: 2rem;
+    min-height: 2rem;
+    padding: 0.25rem 0.25rem;
+    background-color: green;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+  
+.neutralButton {
+    min-width: 2rem;
+    min-height: 2rem;
+    padding: 0.25rem 0.25rem;
+    background-color: #0f0f0f;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.deleteButton {
+    min-width: 2rem;
+    min-height: 2rem;
+    padding: 0.25rem 0.25rem;
+    background-color: red;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}

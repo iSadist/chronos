@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { Button, NeutralButton } from "@/components/Button";
+import { RowItem, ItemData } from "@/components/RowItem";
+import { AddRowView } from "@/components/AddRowView";
 
 const darkTheme = createTheme({
   palette: {
@@ -14,137 +17,19 @@ const darkTheme = createTheme({
 
 import styles from "./page.module.css";
 
-type ButtonProps = {
-  action: () => void;
-  text?: string;
-};
-
-type ItemData = {
-  name: string;
-}
-
-// A button with an action handler. It is a square button with a plus sign and rounded corners.
-function Button(props: ButtonProps) {
-  const onClick = () => {
-    props.action();
-  }
-
-  return (
-    <button className={styles.addButton} onClick={onClick}>
-      {props.text || "+"}
-    </button>
-  );
-}
-
-// A neutral button with text.
-function NeutralButton(props: ButtonProps) {
-  const onClick = () => {
-    props.action();
-  }
-
-  return (
-    <>
-      <button className={styles.neutralButton} onClick={onClick}>
-        {props.text}
-      </button>
-    </>
-  );
-}
-
-function DeleteButton(props: ButtonProps) {
-  const onClick = () => {
-    props.action();
-  }
-
-  return (
-    <>
-      <button className={styles.deleteButton} onClick={onClick}>
-        {props.text || "-"}
-      </button>
-    </>
-  );
-}
-
-type RowItemProps = {
-  item: ItemData;
-  delete: (name: string) => void;
-};
-
-function RowItem(props: RowItemProps) {
-  const [confirmDelete, setConfirmDelete] = useState(false);
-
-  const handleButtonAction = () => {
-    setConfirmDelete(true);
-  }
-
-  const handleDelete = () => {
-    props.delete(props.item.name);
-  }
-
-  const cancelDelete = () => {
-    setConfirmDelete(false);
-  }
-
-  return (
-    <div className={styles.rowItem}>
-      <p className={styles.paragraph}>{props.item.name}</p>
-      {confirmDelete && <DeleteButton text="Confirm delete" action={handleDelete} />}
-      {confirmDelete && <NeutralButton text="x" action={cancelDelete} />}
-      {!confirmDelete && <DeleteButton action={handleButtonAction} />}
-    </div>
-  );
-}
-
-type AddRowViewProps = {
-  addItem: (name: string) => void;
-};
-
-function AddRowView(props: AddRowViewProps) {
-  const [name, setName] = useState('');
-
-  const handleButtonAction = () => {
-    if (name === '') {
-      return;
-    }
-
-    props.addItem(name);
-    setName('');
-  }
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  }
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleButtonAction();
-    }
-  }
-
-  return (
-    <div className={styles.rowItem}>
-      <h3>Add new client</h3>
-      <input
-        className={styles.field}
-        type="text"
-        value={name}
-        onChange={onChange}
-        onKeyDown={onKeyDown}
-      />
-      <Button action={handleButtonAction} />
-    </div>
-  );
-}
-
 function RegisterTimeView({
   items,
-}: { items: Array<ItemData> }) {
+  onRegister,
+}: { items: Array<ItemData>, onRegister: (hours: number, date: Date, project: string) => void }) {
   const [hours, setHours] = useState(0);
+  const [project, setProject] = useState('');
+  const [date, setDate] = useState(new Date());
 
   function onSubmit (event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     console.log('Form submitted');
+    onRegister(hours, date, project);
   }
 
   function handleQuickSelection (event: React.MouseEvent<HTMLButtonElement>) {
@@ -161,6 +46,22 @@ function RegisterTimeView({
     setHours(newValue)
   }
 
+  function onSetDate (newDate: Date) {
+    setDate(newDate);
+  }
+
+  function onSetProject (event: React.ChangeEvent<HTMLSelectElement>) {
+    setProject(event.target.value);
+  }
+
+  useEffect(() => {
+    if (items.length === 0) {
+      return;
+    }
+
+    setProject(items[0]?.name);
+  }, [items]);
+
   return (
     <ThemeProvider theme={darkTheme}>
       <h2>Register time</h2>
@@ -169,7 +70,7 @@ function RegisterTimeView({
       <form className={styles.registerForm} onSubmit={onSubmit}>
         <label>
           Project / Client
-          <select className={styles.select}>
+          <select className={styles.select} onChange={onSetProject}>
             {items.map((item, index) => {
               return <option key={index} value={item.name}>{item.name}</option>
             })}
@@ -177,7 +78,7 @@ function RegisterTimeView({
         </label>
         <div className={styles.inputRow}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateCalendar views={['day']} />
+            <DateCalendar views={['day']} onChange={onSetDate} />
           </LocalizationProvider>
         </div>
         <div className={styles.inputRow}>
@@ -185,10 +86,10 @@ function RegisterTimeView({
             Time spent
           </label>
           <input className={styles.field} type="number" onChange={onChange} value={hours} />
-          <button className={styles.neutralButton} onClick={handleQuickSelection} >1</button>
-          <button className={styles.neutralButton} onClick={handleQuickSelection}>2</button>
-          <button className={styles.neutralButton} onClick={handleQuickSelection}>4</button>
-          <button className={styles.neutralButton} onClick={handleQuickSelection}>8</button>
+          <NeutralButton action={handleQuickSelection} text={'1'} />
+          <NeutralButton action={handleQuickSelection} text={'2'} />
+          <NeutralButton action={handleQuickSelection} text={'4'} />
+          <NeutralButton action={handleQuickSelection} text={'8'} />
         </div>
         <Button text="Submit" action={() => {}} />
       </form>
@@ -200,8 +101,23 @@ function RegisterTimeView({
 // Implement a login page
 // Implement a registration page
 
+type RegisteredEntry = {
+  hours: number;
+  date: Date;
+  project: string;
+}
+
 export default function Home() {
   const [items, setItems] = useState<Array<ItemData>>([]);
+  const [registeredEntries, setRegisteredEntries] = useState<Array<RegisteredEntry>>([]);
+
+  const onRegister = (hours: number, date: Date, project: string) => {
+    if (!hours || !date || !project) {
+      return;
+    }
+
+    setRegisteredEntries([...registeredEntries, { hours, date, project }]);
+  }
 
   return (
     <main className={styles.main}>
@@ -228,12 +144,32 @@ export default function Home() {
         </section>
 
         <section className={styles.section}>
-          <RegisterTimeView items={items} />
+          <RegisterTimeView items={items} onRegister={onRegister} />
         </section>
 
         <section className={styles.section}>
           <h2>Time report</h2>
           <p>Get a time report for a project</p>
+          <table className={styles.reportForm}>
+            <thead className={styles.reportHeader}>
+              <tr className={styles.reportRow}>
+                <th className={styles.reportItem}>Project</th>
+                <th className={styles.reportItem}>Date</th>
+                <th className={styles.reportItem}>Hours</th>
+              </tr>
+            </thead>
+            <tbody className={styles.reportBody}>
+              {registeredEntries.map((entry, index) => {
+                return (
+                  <tr key={index} className={styles.reportRow}>
+                    <td>{entry.project}</td>
+                    <td>{entry.date.toString()}</td>
+                    <td>{entry.hours}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </section>
       </div>
     </main>
