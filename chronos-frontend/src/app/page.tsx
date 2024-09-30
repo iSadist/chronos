@@ -10,6 +10,7 @@ import { RowItem, ItemData } from "@/components/RowItem"
 import { AddRowView } from "@/components/AddRowView"
 import { TimeReportView } from "@/components/TimeReportView"
 import { RegisteredEntry } from "@/common-types"
+import API from "@/api"
 
 const darkTheme = createTheme({
   palette: {
@@ -112,6 +113,18 @@ export default function Home() {
 
     setRegisteredEntries([...registeredEntries, { hours, date, project }])
   }
+
+  useEffect(() => {
+    const api = new API()
+
+    api.getClients().then((response) => {
+      const items = response.map((item: string) => {
+        return { name: item }
+      })
+
+      setItems(items)
+    })
+  }, [])
 
   return (
     <main className={styles.main}>
