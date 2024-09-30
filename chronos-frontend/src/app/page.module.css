@@ -96,34 +96,3 @@
   gap: 1rem;
   width: 100%;
 }
-
-.reportForm {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 1rem;
-  width: 100%;
-}
-
-.reportHeader {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-}
-
-.reportBody {
-  width: 100%
-}
-
-.reportRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-}

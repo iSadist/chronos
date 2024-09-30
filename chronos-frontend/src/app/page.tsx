@@ -1,65 +1,65 @@
-'use client';
+'use client'
 
-import React, { useEffect, useState } from "react";
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Button, NeutralButton } from "@/components/Button";
-import { RowItem, ItemData } from "@/components/RowItem";
-import { AddRowView } from "@/components/AddRowView";
-import { TimeReportView } from "@/components/TimeReportView";
-import { RegisteredEntry } from "@/common-types";
+import React, { useEffect, useState } from "react"
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { Button, NeutralButton } from "@/components/Button"
+import { RowItem, ItemData } from "@/components/RowItem"
+import { AddRowView } from "@/components/AddRowView"
+import { TimeReportView } from "@/components/TimeReportView"
+import { RegisteredEntry } from "@/common-types"
 
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
   },
-});
+})
 
-import styles from "./page.module.css";
+import styles from "./page.module.css"
 
 function RegisterTimeView({
   items,
   onRegister,
 }: { items: Array<ItemData>, onRegister: (hours: number, date: Date, project: string) => void }) {
-  const [hours, setHours] = useState(0);
-  const [project, setProject] = useState('');
-  const [date, setDate] = useState(new Date());
+  const [hours, setHours] = useState(0)
+  const [project, setProject] = useState('')
+  const [date, setDate] = useState(new Date())
 
   function onSubmit (event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    onRegister(hours, date, project);
+    event.preventDefault()
+    onRegister(hours, date, project)
   }
 
   function handleQuickSelection (event: React.MouseEvent<HTMLButtonElement>) {
-    event.preventDefault();
-    const newValue = parseInt(event.currentTarget.textContent || '0');
+    event.preventDefault()
+    const newValue = parseInt(event.currentTarget.textContent || '0')
 
     // Set the hours to the value of the button
-    setHours(newValue);
+    setHours(newValue)
   }
 
   function onChange (event: React.ChangeEvent<HTMLInputElement>) {
-    const newValue = parseInt(event.target.value);
+    const newValue = parseInt(event.target.value)
     setHours(newValue)
   }
 
   function onSetDate (newDate: Date) {
-    setDate(newDate);
+    setDate(newDate)
   }
 
   function onSetProject (event: React.ChangeEvent<HTMLSelectElement>) {
-    setProject(event.target.value);
+    setProject(event.target.value)
   }
 
   useEffect(() => {
     if (items.length === 0) {
-      return;
+      return
     }
 
-    setProject(items[0]?.name);
-  }, [items]);
+    setProject(items[0]?.name)
+  }, [items])
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -94,7 +94,7 @@ function RegisterTimeView({
         <Button text="Submit" action={() => {}} />
       </form>
     </ThemeProvider>
-  );
+  )
 }
 
 // TODO: Use AWS Cognito for authentication
@@ -102,15 +102,15 @@ function RegisterTimeView({
 // Implement a registration page
 
 export default function Home() {
-  const [items, setItems] = useState<Array<ItemData>>([]);
-  const [registeredEntries, setRegisteredEntries] = useState<Array<RegisteredEntry>>([]);
+  const [items, setItems] = useState<Array<ItemData>>([])
+  const [registeredEntries, setRegisteredEntries] = useState<Array<RegisteredEntry>>([])
 
   const onRegister = (hours: number, date: Date, project: string) => {
     if (!hours || !date || !project) {
-      return;
+      return
     }
 
-    setRegisteredEntries([...registeredEntries, { hours, date, project }]);
+    setRegisteredEntries([...registeredEntries, { hours, date, project }])
   }
 
   return (
@@ -128,12 +128,12 @@ export default function Home() {
           {/* Render a RowItem for every item */}
           {items.map((item, index) => {
             return <RowItem key={index} item={item} delete={(name) => {
-              setItems(items.filter((item) => item.name !== name));
+              setItems(items.filter((item) => item.name !== name))
             }} />
           })}
 
           <AddRowView addItem={(name) => {
-            setItems([...items, { name }]);
+            setItems([...items, { name }])
           }} />
         </section>
 
@@ -146,5 +146,5 @@ export default function Home() {
         </section>
       </div>
     </main>
-  );
+  )
 }
