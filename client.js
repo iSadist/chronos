@@ -4,7 +4,7 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 const CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*", // Allow all origins
     "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE"
 };
 
 /**

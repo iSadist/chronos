@@ -34,7 +34,7 @@ class API {
     }
 
     async deleteClient(client: string) {
-        const path = `${this.baseURL}/clients?userId=${this.userId}&client=${client}`
+        const path = `${this.baseURL}/clients?userId=${this.userId}&clientId=${client}`
         const parameters = {
             method: 'DELETE',
             headers: {

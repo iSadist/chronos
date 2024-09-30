@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
@@ -114,17 +114,45 @@ export default function Home() {
     setRegisteredEntries([...registeredEntries, { hours, date, project }])
   }
 
-  useEffect(() => {
+  const refreshClientList = useCallback(async () => {
     const api = new API()
 
-    api.getClients().then((response) => {
-      const items = response.map((item: string) => {
-        return { name: item }
-      })
-
-      setItems(items)
+    const response = await api.getClients()
+    
+    const items = response.map((item: string) => {
+      return { name: item }
     })
+
+    setItems(items)
   }, [])
+
+  useEffect(() => {
+    refreshClientList()
+  }, [refreshClientList])
+
+  const addItem = useCallback(async (name: string) => {
+    const api = new API()
+    const response = await api.createClient(name)
+
+    if (response.error) {
+      console.error(response.error)
+      return
+    }
+
+    await refreshClientList()
+  }, [refreshClientList])
+
+  const deleteItem = useCallback(async (name: string) => {
+    const api = new API()
+    const response = await api.deleteClient(name)
+
+    if (response.error) {
+      console.error(response.error)
+      return
+    }
+
+    await refreshClientList()
+  }, [refreshClientList])
 
   return (
     <main className={styles.main}>
@@ -140,14 +168,10 @@ export default function Home() {
 
           {/* Render a RowItem for every item */}
           {items.map((item, index) => {
-            return <RowItem key={index} item={item} delete={(name) => {
-              setItems(items.filter((item) => item.name !== name))
-            }} />
+            return <RowItem key={index} item={item} delete={deleteItem} />
           })}
 
-          <AddRowView addItem={(name) => {
-            setItems([...items, { name }])
-          }} />
+          <AddRowView addItem={addItem} />
         </section>
 
         <section className={styles.section}>
