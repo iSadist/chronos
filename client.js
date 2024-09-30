@@ -1,6 +1,12 @@
 const AWS = require('aws-sdk');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
+const CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*", // Allow all origins
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+};
+
 /**
  * Returns all items from the TimeEntries table
  * @param {*} userId The user ID
@@ -46,11 +52,7 @@ async function getAllClients(userId) {
 
         return {
             statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*", // Allow all origins
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Methods": "GET"
-            },
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify(clients)
         };
     } catch (error) {
@@ -58,6 +60,7 @@ async function getAllClients(userId) {
 
         return {
             statusCode: 500,
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'Could not retrieve clients.'}),
         };
     }
@@ -85,11 +88,7 @@ async function createClient(clientId, userId) {
         await dynamo.put(params).promise();
         return {
             statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*", // Allow all origins
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-            },
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: `New client recorded: ${clientId}`}),
         };
     } catch (error) {
@@ -97,6 +96,7 @@ async function createClient(clientId, userId) {
 
         return {
             statusCode: 500,
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'Could not create client.'}),
         };
     }
@@ -117,11 +117,7 @@ async function deleteClient(clientId, userId) {
         if (!clients.includes(clientId)) {
             return {
                 statusCode: 404,
-                headers: {
-                    "Access-Control-Allow-Origin": "*", // Allow all origins
-                    "Access-Control-Allow-Headers": "Content-Type",
-                    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-                },
+                headers: { ...CORS_HEADERS },
                 body: JSON.stringify({ message: `Client does not exist: ${clientId}.`}),
             };
         }
@@ -146,11 +142,7 @@ async function deleteClient(clientId, userId) {
 
         return {
             statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*", // Allow all origins
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-            },
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'Client deleted.'}),
         };
     } catch(error) {
@@ -158,6 +150,7 @@ async function deleteClient(clientId, userId) {
 
         return {
             statusCode: 500,
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'Could not delete client.'}),
         };
     }
@@ -169,11 +162,7 @@ exports.handler = async (event) => {
     if(!userId) {
         return {
             statusCode: 400,
-            headers: {
-                "Access-Control-Allow-Origin": "*", // Allow all origins
-                "Access-Control-Allow-Headers": "Content-Type",
-                "Access-Control-Allow-Methods": "GET"
-            },
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'User ID is required.'}),
         };
     }
@@ -184,11 +173,7 @@ exports.handler = async (event) => {
 exports.options = async (event) => {
     return {
         statusCode: 200,
-        headers: {
-            "Access-Control-Allow-Origin": "*", // Allow all origins
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-        },
+        headers: { ...CORS_HEADERS },
         body: JSON.stringify({ message: 'Options request successful.'}),
     };
 };
@@ -199,6 +184,7 @@ exports.create = async (event) => {
     if (!clientId) {
         return {
             statusCode: 400,
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'Client ID is required.'}),
         };
     }
@@ -206,6 +192,7 @@ exports.create = async (event) => {
     if(!userId) {
         return {
             statusCode: 400,
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'User ID is required.'}),
         };
     }
@@ -216,6 +203,7 @@ exports.create = async (event) => {
     if (clients.includes(clientId)) {
         return {
             statusCode: 400,
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: `Client already exists: ${clientId}`}),
         };
     }
@@ -229,6 +217,7 @@ exports.delete = async (event) => {
     if (!clientId) {
         return {
             statusCode: 400,
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'Client ID is required.'}),
         };
     }
@@ -236,6 +225,7 @@ exports.delete = async (event) => {
     if(!userId) {
         return {
             statusCode: 400,
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'User ID is required.'}),
         };
     }
