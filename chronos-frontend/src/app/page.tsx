@@ -8,6 +8,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Button, NeutralButton } from "@/components/Button";
 import { RowItem, ItemData } from "@/components/RowItem";
 import { AddRowView } from "@/components/AddRowView";
+import { TimeReportView } from "@/components/TimeReportView";
+import { RegisteredEntry } from "@/common-types";
 
 const darkTheme = createTheme({
   palette: {
@@ -27,15 +29,12 @@ function RegisterTimeView({
 
   function onSubmit (event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    console.log('Form submitted');
     onRegister(hours, date, project);
   }
 
   function handleQuickSelection (event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     const newValue = parseInt(event.currentTarget.textContent || '0');
-    console.log('Quick selection', newValue);
 
     // Set the hours to the value of the button
     setHours(newValue);
@@ -77,6 +76,7 @@ function RegisterTimeView({
           </select>
         </label>
         <div className={styles.inputRow}>
+          {/* TODO: Hide this initially and just register time for today. Also expose a button to change date if needed. */}
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar views={['day']} onChange={onSetDate} />
           </LocalizationProvider>
@@ -100,12 +100,6 @@ function RegisterTimeView({
 // TODO: Use AWS Cognito for authentication
 // Implement a login page
 // Implement a registration page
-
-type RegisteredEntry = {
-  hours: number;
-  date: Date;
-  project: string;
-}
 
 export default function Home() {
   const [items, setItems] = useState<Array<ItemData>>([]);
@@ -148,28 +142,7 @@ export default function Home() {
         </section>
 
         <section className={styles.section}>
-          <h2>Time report</h2>
-          <p>Get a time report for a project</p>
-          <table className={styles.reportForm}>
-            <thead className={styles.reportHeader}>
-              <tr className={styles.reportRow}>
-                <th className={styles.reportItem}>Project</th>
-                <th className={styles.reportItem}>Date</th>
-                <th className={styles.reportItem}>Hours</th>
-              </tr>
-            </thead>
-            <tbody className={styles.reportBody}>
-              {registeredEntries.map((entry, index) => {
-                return (
-                  <tr key={index} className={styles.reportRow}>
-                    <td>{entry.project}</td>
-                    <td>{entry.date.toString()}</td>
-                    <td>{entry.hours}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <TimeReportView registeredEntries={registeredEntries} />
         </section>
       </div>
     </main>
