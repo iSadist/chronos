@@ -1,6 +1,6 @@
 data "archive_file" "register_zip" {
   type        = "zip"
-  source_file  = "register.js"
+  source_file = "register.js"
   output_path = "register.zip"
 }
 
@@ -43,6 +43,15 @@ resource "aws_lambda_function" "client_get_lambda" {
   handler          = "client.handler"
   source_code_hash = data.archive_file.client_zip.output_base64sha256
   runtime          = "nodejs16.x"
+}
+
+resource "aws_lambda_function" "client_options_lambda" {
+  filename          = "client.zip"
+  function_name     = "ClientOptionsFunction"
+  role              = aws_iam_role.lambda_exec_role.arn
+  handler           = "client.options"
+  source_code_hash  = data.archive_file.client_zip.output_base64sha256
+  runtime           = "nodejs16.x"
 }
 
 resource "aws_lambda_function" "client_create_lambda" {

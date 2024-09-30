@@ -46,6 +46,11 @@ async function getAllClients(userId) {
 
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*", // Allow all origins
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "GET"
+            },
             body: JSON.stringify(clients)
         };
     } catch (error) {
@@ -80,6 +85,11 @@ async function createClient(clientId, userId) {
         await dynamo.put(params).promise();
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*", // Allow all origins
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+            },
             body: JSON.stringify({ message: `New client recorded: ${clientId}`}),
         };
     } catch (error) {
@@ -107,6 +117,11 @@ async function deleteClient(clientId, userId) {
         if (!clients.includes(clientId)) {
             return {
                 statusCode: 404,
+                headers: {
+                    "Access-Control-Allow-Origin": "*", // Allow all origins
+                    "Access-Control-Allow-Headers": "Content-Type",
+                    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+                },
                 body: JSON.stringify({ message: `Client does not exist: ${clientId}.`}),
             };
         }
@@ -131,6 +146,11 @@ async function deleteClient(clientId, userId) {
 
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*", // Allow all origins
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+            },
             body: JSON.stringify({ message: 'Client deleted.'}),
         };
     } catch(error) {
@@ -149,11 +169,28 @@ exports.handler = async (event) => {
     if(!userId) {
         return {
             statusCode: 400,
+            headers: {
+                "Access-Control-Allow-Origin": "*", // Allow all origins
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "GET"
+            },
             body: JSON.stringify({ message: 'User ID is required.'}),
         };
     }
 
     return await getAllClients(userId);
+};
+
+exports.options = async (event) => {
+    return {
+        statusCode: 200,
+        headers: {
+            "Access-Control-Allow-Origin": "*", // Allow all origins
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+        },
+        body: JSON.stringify({ message: 'Options request successful.'}),
+    };
 };
 
 exports.create = async (event) => {
