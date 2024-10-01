@@ -116,11 +116,9 @@ export default function Home() {
 
   const refreshClientList = useCallback(async () => {
     const api = new API()
-
     const response = await api.getClients()
-    
     const items = response.map((item: string) => {
-      return { name: item }
+      return { name: item, isUpdating: false }
     })
 
     setItems(items)
@@ -132,6 +130,7 @@ export default function Home() {
 
   const addItem = useCallback(async (name: string) => {
     const api = new API()
+    setItems([...items, { name, isUpdating: true }])
     const response = await api.createClient(name)
 
     if (response.error) {
@@ -140,10 +139,17 @@ export default function Home() {
     }
 
     await refreshClientList()
-  }, [refreshClientList])
+  }, [refreshClientList, setItems, items])
 
   const deleteItem = useCallback(async (name: string) => {
     const api = new API()
+    const deletedItem = items.find((item) => item.name === name)
+
+    if (deletedItem) {
+      deletedItem.isUpdating = true
+      setItems([...items])
+    }
+
     const response = await api.deleteClient(name)
 
     if (response.error) {
@@ -152,7 +158,7 @@ export default function Home() {
     }
 
     await refreshClientList()
-  }, [refreshClientList])
+  }, [refreshClientList, items])
 
   return (
     <main className={styles.main}>
