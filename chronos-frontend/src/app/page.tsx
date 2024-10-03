@@ -10,6 +10,7 @@ import { RowItem, ItemData } from "@/components/RowItem"
 import { AddRowView } from "@/components/AddRowView"
 import { TimeReportView } from "@/components/TimeReportView"
 import { RegisteredEntry } from "@/common-types"
+import Loader from "react-spinners/PulseLoader"
 import API from "@/api"
 
 const darkTheme = createTheme({
@@ -105,6 +106,7 @@ function RegisterTimeView({
 export default function Home() {
   const [items, setItems] = useState<Array<ItemData>>([])
   const [registeredEntries, setRegisteredEntries] = useState<Array<RegisteredEntry>>([])
+  const [loading, setLoading] = useState(true)
 
   const onRegister = (hours: number, date: Date, project: string) => {
     if (!hours || !date || !project) {
@@ -122,6 +124,7 @@ export default function Home() {
     })
 
     setItems(items)
+    setLoading(false)
   }, [])
 
   useEffect(() => {
@@ -172,12 +175,17 @@ export default function Home() {
           <h2>Clients</h2>
           <p>View and manage clients.</p>
 
-          {/* Render a RowItem for every item */}
-          {items.map((item, index) => {
-            return <RowItem key={index} item={item} delete={deleteItem} />
-          })}
-
-          <AddRowView addItem={addItem} />
+          {/* Show a loading indicator while loading */}
+          {loading && <Loader color={"white"} />}
+          {!loading && items.length === 0 && <div>Add your first client by filling in the field below</div>}
+          {!loading && items.length > 0 && (
+            <>
+              {items.map((item, index) => {
+                return <RowItem key={index} item={item} delete={deleteItem} />
+              })}
+            </>
+          )}
+          {!loading && <AddRowView addItem={addItem} />}
         </section>
 
         <section className={styles.section}>
