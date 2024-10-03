@@ -1,4 +1,4 @@
-import styles from "./Button.module.css";
+import styles from "./Button.module.css"
 
 type ButtonProps = {
     action: (event: React.MouseEvent<HTMLButtonElement>) => void;
@@ -8,20 +8,20 @@ type ButtonProps = {
 // A button with an action handler. It is a square button with a plus sign and rounded corners.
 export function Button(props: ButtonProps) {
     const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        props.action(event);
+        props.action(event)
     }
 
     return (
         <button className={styles.addButton} onClick={onClick}>
             {props.text || "+"}
         </button>
-    );
+    )
 }
   
 // A neutral button with text.
 export function NeutralButton(props: ButtonProps) {
     const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        props.action(event);
+        props.action(event)
     }
 
     return (
@@ -30,12 +30,12 @@ export function NeutralButton(props: ButtonProps) {
                 {props.text}
             </button>
         </>
-    );
+    )
 }
 
 export function DeleteButton(props: ButtonProps) {
     const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        props.action(event);
+        props.action(event)
     }
 
     return (
@@ -44,5 +44,5 @@ export function DeleteButton(props: ButtonProps) {
                 {props.text || "-"}
             </button>
         </>
-    );
+    )
 }
