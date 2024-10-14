@@ -23,6 +23,27 @@ resource "aws_apigatewayv2_route" "register_route" {
   target    = "integrations/${aws_apigatewayv2_integration.register_integration.id}"
 }
 
+resource "aws_apigatewayv2_integration" "entries_options_integration" {
+  api_id           = aws_apigatewayv2_api.chronos_api.id
+  integration_type = "AWS_PROXY"
+  integration_uri  = aws_lambda_function.entries_options_lambda.arn
+}
+
+# Route for OPTIONS request
+resource "aws_apigatewayv2_route" "options_entries_route" {
+  api_id    = aws_apigatewayv2_api.chronos_api.id
+  route_key = "OPTIONS /entries"
+  target    = "integrations/${aws_apigatewayv2_integration.entries_options_integration.id}"
+}
+
+resource "aws_lambda_permission" "entries_options_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvokeClientLambda"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.entries_options_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.chronos_api.execution_arn}/*/*"
+}
+
 resource "aws_lambda_permission" "register_permission" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"

@@ -1,6 +1,12 @@
 const AWS = require('aws-sdk');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
+const CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*", // Allow all origins
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE"
+};
+
 // Register a time entry and returns a promise
 function registerTimeEntry(clientId, duration, date, userId) {
     const params = {
@@ -26,6 +32,7 @@ exports.handler = async (event) => {
         if (!entries) {
             return {
                 statusCode: 400,
+                headers: { ...CORS_HEADERS },
                 message: 'Invalid request. Missing field `entries`.'
             };
         }
@@ -39,6 +46,7 @@ exports.handler = async (event) => {
 
         const response = {
             statusCode: 200,
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'Time entries recorded.' })
         };
 
@@ -48,9 +56,18 @@ exports.handler = async (event) => {
 
         const response = {
             statusCode: 500,
+            headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'Could not record time entry.' })
         };
 
         return response;
     }
+};
+
+exports.options = async (event) => {
+    return {
+        statusCode: 200,
+        headers: { ...CORS_HEADERS },
+        body: JSON.stringify({ message: 'Options request successful.'}),
+    };
 };

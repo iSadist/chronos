@@ -13,6 +13,15 @@ resource "aws_lambda_function" "register_lambda" {
   runtime       = "nodejs16.x"
 }
 
+resource "aws_lambda_function" "entries_options_lambda" {
+  filename          = "register.zip"
+  function_name     = "EntriesOptionsFunction"
+  role              = aws_iam_role.lambda_exec_role.arn
+  handler           = "register.options"
+  source_code_hash  = data.archive_file.client_zip.output_base64sha256
+  runtime           = "nodejs16.x"
+}
+
 data "archive_file" "get_total_time_zip" {
   type        = "zip"
   source_file = "get_total_time.js"
