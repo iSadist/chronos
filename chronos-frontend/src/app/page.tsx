@@ -108,16 +108,29 @@ export default function Home() {
   const [registeredEntries, setRegisteredEntries] = useState<Array<RegisteredEntry>>([])
   const [loading, setLoading] = useState(true)
 
-  const refreshTimeEntries = useCallback(async () => {
+  const getEntriesForClient = useCallback(async (clientId: string) => {
     const api = new API()
-    const response = await api.getTimeEntries({ clientId: 'Tink', from: '2021-01-01', to: '2024-12-31', mode: 'daily' })
-    
-    const entries = response.data.map((entry: DailyReportEntry) => {
+    const response = await api.getTimeEntries({ clientId: clientId, from: '2021-01-01', to: '2024-12-31', mode: 'daily' })
+
+    if (!Array.isArray(response.data)) {
+      return []
+    }
+
+    return response.data.map((entry: DailyReportEntry) => {
       return { hours: entry.Duration, date: new Date(entry.Date), project: entry.ClientId }
     })
+  }, [])
 
-    setRegisteredEntries(entries)
-  }, [setRegisteredEntries])
+  const refreshTimeEntries = useCallback(async () => {
+    const promises = items.map(async (item) => {
+      const entries = await getEntriesForClient(item.name)
+      return entries
+    })
+
+    const all = await Promise.all(promises)
+
+    setRegisteredEntries(all.flat())
+  }, [getEntriesForClient, items, setRegisteredEntries])
 
   const onRegisterTime = useCallback( async (hours: number, date: Date, project: string) => {
     if (!hours || !date || !project) {

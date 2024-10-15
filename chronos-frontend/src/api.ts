@@ -23,7 +23,7 @@ export type DailyReportEntry = {
 export type DailyReportResponse = {
     from: string
     to: string
-    data: Array<DailyReportEntry>
+    data: number | Array<DailyReportEntry>
 }
 
 class API {
