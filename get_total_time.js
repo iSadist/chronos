@@ -1,6 +1,12 @@
 const AWS = require('aws-sdk');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*", // Allow all origins
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE"
+};
+
 const getAllItems = async (userId) => {
   const params = {
     TableName: 'TimeEntries',
@@ -68,12 +74,14 @@ const getAllTimeEntries = async (clientId, mode, userId) => {
   
       return {
         statusCode: 200,
+        headers: { ...CORS_HEADERS },
         body: JSON.stringify(response),
       };
     }
 
     return {
       statusCode: 200,
+      headers: { ...CORS_HEADERS },
       body: JSON.stringify(data),
     };
   } catch (error) {
@@ -81,6 +89,7 @@ const getAllTimeEntries = async (clientId, mode, userId) => {
 
     return {
       statusCode: 500,
+      headers: { ...CORS_HEADERS },
       body: JSON.stringify({ message: 'Could not retrieve time entries.', error })
     };
   }
@@ -94,6 +103,7 @@ const getTimeEntriesByDateRange = async (clientId, from, to, mode, userId) => {
   if (isNaN(fromDate) || isNaN(toDate)) {
     return {
       statusCode: 400,
+      headers: { ...CORS_HEADERS },
       body: JSON.stringify({ message: 'Invalid date format. Please use ISO 8601 format.' })
     };
   }
@@ -124,12 +134,14 @@ const getTimeEntriesByDateRange = async (clientId, from, to, mode, userId) => {
       
       return {
         statusCode: 200,
+        headers: { ...CORS_HEADERS },
         body: JSON.stringify(response),
       };
     }
 
     return {
       statusCode: 200,
+      headers: { ...CORS_HEADERS },
       body: JSON.stringify(data),
     };
   } catch(error) {
@@ -137,20 +149,20 @@ const getTimeEntriesByDateRange = async (clientId, from, to, mode, userId) => {
 
     return {
       statusCode: 500,
+      headers: { ...CORS_HEADERS },
       body: JSON.stringify({ message: 'Could not retrieve time entries.', error })
     };
   }
 }
 
 exports.handler = async (event) => {
-  const body = JSON.parse(event.body);
   const {
     clientId,
     from,
     to,
     mode,
     userId,
-  } = body;
+  } = event.queryStringParameters || {};
 
   // Validate the input
 
@@ -158,6 +170,7 @@ exports.handler = async (event) => {
   if (!clientId) {
     return {
       statusCode: 400,
+      headers: { ...CORS_HEADERS },
       body: JSON.stringify({ message: 'Client ID is required.' }),
     };
   }
@@ -166,6 +179,7 @@ exports.handler = async (event) => {
   if (!userId) {
     return {
       statusCode: 400,
+      headers: { ...CORS_HEADERS },
       body: JSON.stringify({ message: 'User ID is required.' }),
     };
   }
