@@ -11,15 +11,15 @@ import { AddRowView } from "@/components/AddRowView"
 import { TimeReportView } from "@/components/TimeReportView"
 import { RegisteredEntry } from "@/common-types"
 import Loader from "react-spinners/PulseLoader"
-import API from "@/api"
+import API, { DailyReportEntry } from "@/api"
+
+import styles from "./page.module.css"
 
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
   },
 })
-
-import styles from "./page.module.css"
 
 function RegisterTimeView({
   items,
@@ -108,13 +108,27 @@ export default function Home() {
   const [registeredEntries, setRegisteredEntries] = useState<Array<RegisteredEntry>>([])
   const [loading, setLoading] = useState(true)
 
-  const onRegister = (hours: number, date: Date, project: string) => {
+  const refreshTimeEntries = useCallback(async () => {
+    const api = new API()
+    const response = await api.getTimeEntries({ clientId: 'Tink', from: '2021-01-01', to: '2024-12-31', mode: 'daily' })
+    
+    const entries = response.data.map((entry: DailyReportEntry) => {
+      return { hours: entry.Duration, date: new Date(entry.Date), project: entry.ClientId }
+    })
+
+    setRegisteredEntries(entries)
+  }, [setRegisteredEntries])
+
+  const onRegisterTime = useCallback( async (hours: number, date: Date, project: string) => {
     if (!hours || !date || !project) {
       return
     }
 
-    setRegisteredEntries([...registeredEntries, { hours, date, project }])
-  }
+    const api = new API()
+    const response = await api.registerTime({ clientId: project, duration: hours, date: date.toISOString(), userId: 'Net' })
+
+    await refreshTimeEntries()
+  }, [refreshTimeEntries])
 
   const refreshClientList = useCallback(async () => {
     const api = new API()
@@ -189,7 +203,7 @@ export default function Home() {
         </section>
 
         <section className={styles.section}>
-          <RegisterTimeView items={items} onRegister={onRegister} />
+          <RegisterTimeView items={items} onRegister={onRegisterTime} />
         </section>
 
         <section className={styles.section}>
