@@ -6,7 +6,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { Button, NeutralButton } from "@/components/Button"
 import { ItemData } from "@/components/RowItem"
 
-import styles from "../app/page.module.css"
+import styles from "./RegisterTimeView.module.css"
 
 const darkTheme = createTheme({
   palette: {
