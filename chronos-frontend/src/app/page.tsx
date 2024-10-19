@@ -1,12 +1,11 @@
 'use client'
 
 import React, { useCallback, useEffect, useState } from "react"
-import { RowItem, ItemData } from "@/components/RowItem"
-import { AddRowView } from "@/components/AddRowView"
+import { ItemData } from "@/components/RowItem"
 import { TimeReportView } from "@/components/TimeReportView"
 import { RegisteredEntry } from "@/common-types"
+import ClientListView from "@/components/ClientListView"
 import RegisterTimeView from "@/components/RegisterTimeView"
-import Loader from "react-spinners/PulseLoader"
 import API, { DailyReportEntry } from "@/api"
 
 import styles from "./page.module.css"
@@ -169,20 +168,7 @@ export default function Home() {
 
       <div className={styles.content}>
         <section className={styles.section}>
-          <h2>Clients</h2>
-          <p>View and manage clients.</p>
-
-          {/* Show a loading indicator while loading */}
-          {loading && <Loader color={"white"} />}
-          {!loading && items.length === 0 && <div>Add your first client by filling in the field below</div>}
-          {!loading && items.length > 0 && (
-            <>
-              {items.map((item, index) => {
-                return <RowItem key={index} item={item} delete={deleteItem} />
-              })}
-            </>
-          )}
-          {!loading && <AddRowView addItem={addItem} />}
+          <ClientListView addItem={addItem} deleteItem={deleteItem} items={items} loading={loading} />
         </section>
 
         <section className={styles.section}>
