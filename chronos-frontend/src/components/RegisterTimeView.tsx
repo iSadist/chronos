@@ -3,7 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { Button, NeutralButton } from "@/components/Button"
+import { Button, LoadingButton, NeutralButton } from "@/components/Button"
 import { ItemData } from "@/components/RowItem"
 
 import styles from "./RegisterTimeView.module.css"
@@ -14,17 +14,26 @@ const darkTheme = createTheme({
   },
 })
 
+type RegisterTimeViewProps = {
+  items: Array<ItemData>
+  onRegister: (hours: number, date: Date, project: string) => Promise<void>
+}
+
 function RegisterTimeView({
   items,
   onRegister,
-}: { items: Array<ItemData>, onRegister: (hours: number, date: Date, project: string) => void }) {
+}: RegisterTimeViewProps) {
   const [hours, setHours] = useState(0)
   const [project, setProject] = useState('')
   const [date, setDate] = useState(new Date())
+  const [loading, setLoading] = useState(false)
 
-  function onSubmit (event: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit (event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    onRegister(hours, date, project)
+
+    setLoading(true)
+    await onRegister(hours, date, project)
+    setLoading(false)
   }
 
   function handleQuickSelection (event: React.MouseEvent<HTMLButtonElement>) {
@@ -86,7 +95,7 @@ function RegisterTimeView({
           <NeutralButton action={handleQuickSelection} text={'4'} />
           <NeutralButton action={handleQuickSelection} text={'8'} />
         </div>
-        <Button text="Submit" action={() => {}} />
+        <LoadingButton loading={loading} text="Submit" action={() => {}} />
       </form>
     </ThemeProvider>
   )
