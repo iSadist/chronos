@@ -1,6 +1,7 @@
 import React, { useState } from "react"
-import styles from "./TimeReport.module.css"
 import { RegisteredEntry } from "@/common-types"
+
+import styles from "./TimeReport.module.css"
 
 function AllEntryReport({ registeredEntries }: { registeredEntries: Array<RegisteredEntry> }) {
     return (
@@ -17,7 +18,7 @@ function AllEntryReport({ registeredEntries }: { registeredEntries: Array<Regist
             return (
               <tr key={index} className={styles.reportRow}>
                 <td>{entry.project}</td>
-                <td>{entry.date.toString()}</td>
+                <td>{entry.date.toDateString()}</td>
                 <td>{entry.hours}</td>
               </tr>
             )
