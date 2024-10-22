@@ -19,32 +19,30 @@
 }
 
 .reportForm {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 1rem;
+    display: table;
     width: 100%;
+    border-collapse: collapse;
 }
   
-.reportHeader {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
+.reportHeader, .reportRow {
+    display: table-row;
     width: 100%;
-}
-
-.reportBody {
-    width: 100%
 }
 
 .reportRow {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.reportHeader > div, .reportRow > div {
+    display: table-cell;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+    text-align: left; /* Ensure text alignment is consistent */
+}
+
+.reportBody {
+    display: table-row-group;
     width: 100%;
 }

@@ -9,28 +9,28 @@ function getWeek(date: Date) {
 }
 
 function AllEntryReport({ registeredEntries }: { registeredEntries: Array<RegisteredEntry> }) {
-    return (
-      <table className={styles.reportForm}>
-        <thead className={styles.reportHeader}>
-          <tr className={styles.reportRow}>
-            <th className={styles.reportItem}>Project</th>
-            <th className={styles.reportItem}>Date</th>
-            <th className={styles.reportItem}>Hours</th>
-          </tr>
-        </thead>
-        <tbody className={styles.reportBody}>
-          {registeredEntries.map((entry, index) => {
-            return (
-              <tr key={index} className={styles.reportRow}>
-                <td>{entry.project}</td>
-                <td>{entry.date.toDateString()}</td>
-                <td>{entry.hours}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    )
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Date</th>
+          <th>Hours</th>
+        </tr>
+      </thead>
+      <tbody>
+        {registeredEntries.map((entry, index) => {
+          return (
+            <tr key={index}>
+              <td>{entry.project}</td>
+              <td>{entry.date.toDateString()}</td>
+              <td>{entry.hours}</td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+  )
 }
 
 function DailyReport({ registeredEntries }: { registeredEntries: Array<RegisteredEntry> }) {
@@ -49,17 +49,17 @@ function DailyReport({ registeredEntries }: { registeredEntries: Array<Registere
   const dailyEntryArray = Object.values(dailyEntries)
 
   return (
-    <table className={styles.reportForm}>
-      <thead className={styles.reportHeader}>
-        <tr className={styles.reportRow}>
-          <th className={styles.reportItem}>Date</th>
-          <th className={styles.reportItem}>Hours</th>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Hours</th>
         </tr>
       </thead>
       <tbody className={styles.reportBody}>
         {dailyEntryArray.map((entry, index) => {
           return (
-            <tr key={index} className={styles.reportRow}>
+            <tr key={index}>
               <td>{entry.date.toDateString()}</td>
               <td>{entry.hours}</td>
             </tr>
@@ -85,17 +85,17 @@ function WeeklyReport({ registeredEntries }: { registeredEntries: Array<Register
   const weeklyEntryArray = Object.values(weeklyEntries)
 
   return (
-    <table className={styles.reportForm}>
-      <thead className={styles.reportHeader}>
-        <tr className={styles.reportRow}>
-          <th className={styles.reportItem}>Week</th>
-          <th className={styles.reportItem}>Hours</th>
+    <table>
+      <thead>
+        <tr>
+          <th>Week</th>
+          <th>Hours</th>
         </tr>
       </thead>
-      <tbody className={styles.reportBody}>
+      <tbody>
         {weeklyEntryArray.map((entry, index) => {
           return (
-            <tr key={index} className={styles.reportRow}>
+            <tr key={index}>
               <td>{getWeek(entry.date)}</td>
               <td>{entry.hours}</td>
             </tr>
@@ -142,17 +142,17 @@ function MonthlyReport({ registeredEntries }: { registeredEntries: Array<Registe
   }
 
   return (
-    <table className={styles.reportForm}>
-      <thead className={styles.reportHeader}>
-        <tr className={styles.reportRow}>
-          <th className={styles.reportItem}>Month</th>
-          <th className={styles.reportItem}>Hours</th>
+    <table>
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Hours</th>
         </tr>
       </thead>
-      <tbody className={styles.reportBody}>
+      <tbody>
         {monthlyEntryArray.map((entry, index) => {
           return (
-            <tr key={index} className={styles.reportRow}>
+            <tr key={index}>
               <td>{`${getMonthName(entry.date.getMonth())} - ${entry.date.getFullYear()}`}</td>
               <td>{entry.hours}</td>
             </tr>
