@@ -18,31 +18,15 @@
     transition: box-shadow 0.3s ease;
 }
 
-.reportForm {
-    display: table;
+.tableList {
     width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+
+.projectsTable {
+    width: calc(25% - 25px);
     border-collapse: collapse;
-}
-  
-.reportHeader, .reportRow {
-    display: table-row;
-    width: 100%;
-}
-
-.reportRow {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
-
-.reportHeader > div, .reportRow > div {
-    display: table-cell;
-    padding: 0.5rem;
-    border-bottom: 1px solid #ddd;
-    text-align: left; /* Ensure text alignment is consistent */
-}
-
-.reportBody {
-    display: table-row-group;
-    width: 100%;
+    margin-top: 1rem;
 }

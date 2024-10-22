@@ -3,12 +3,69 @@ import { RegisteredEntry } from "@/common-types"
 
 import styles from "./TimeReport.module.css"
 
+type ProjectEntry = {
+  name: string,
+  hours: number
+}
+
+type Entry = {
+  id: string,
+  projects: Array<ProjectEntry>
+}
+
+type TableList = {
+  entry: Array<Entry>
+}
+
 function getWeek(date: Date) {
   const onejan = new Date(date.getFullYear(), 0, 1)
   return Math.ceil((((date.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7)
 }
 
+function TableWithDate({ id, projects }: Entry) {
+  return (
+    <div className={styles.projectsTable}>
+      <h3>{id}</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Hours</th>
+          </tr>
+        </thead>
+        <tbody>
+          {projects.map((project, index) => {
+            return (
+              <tr key={index}>
+                <td>{project.name}</td>
+                <td>{project.hours}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+
+/**
+ * Simple report that lists all entries
+ * @param registeredEntries
+ * @returns 
+ */
 function AllEntryReport({ registeredEntries }: { registeredEntries: Array<RegisteredEntry> }) {
+  // Sort the entries by date
+  registeredEntries.sort((a, b) => {
+    if (a.date < b.date) {
+      return -1
+    }
+    if (a.date > b.date) {
+      return 1
+    }
+    return 0
+  })
+
   return (
     <table>
       <thead>
@@ -34,39 +91,50 @@ function AllEntryReport({ registeredEntries }: { registeredEntries: Array<Regist
 }
 
 function DailyReport({ registeredEntries }: { registeredEntries: Array<RegisteredEntry> }) {
-  // Bundle all the entries for the same day
+  // Bundle all the entries for the same day and project
   const dailyEntries = registeredEntries.reduce((acc, entry) => {
-    const key = entry.date.toDateString()
+    const key = `${entry.date.toDateString()}-${entry.project}`
     if (!acc[key]) {
-      acc[key] = { date: entry.date, hours: 0 }
+      acc[key] = { date: entry.date, project: entry.project, hours: 0 }
     }
     acc[key].hours += entry.hours
     return acc
   }
-  , {} as { [key: string]: { date: Date, hours: number } })
+  , {} as { [key: string]: { date: Date, project: string, hours: number } })
 
   // Convert the object back to an array
   const dailyEntryArray = Object.values(dailyEntries)
 
+  // Transform to a daily table list
+  var dailyTableList: TableList = { entry: [] }
+
+  dailyEntryArray.forEach((entry) => {
+    const date = entry.date.toDateString()
+    const project = entry.project
+    const hours = entry.hours
+
+    const existingEntry = dailyTableList.entry.find((entry) => entry.id === date)
+    if (existingEntry) {
+      const existingProject = existingEntry.projects.find((p) => p.name === project)
+      if (existingProject) {
+        existingProject.hours += hours
+      } else {
+        existingEntry.projects.push({ name: project, hours: hours })
+      }
+    } else {
+      dailyTableList.entry.push({
+        id: entry.date.toDateString(),
+        projects: [{ name: project, hours: hours }]
+      })
+    }
+  })
+
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Hours</th>
-        </tr>
-      </thead>
-      <tbody className={styles.reportBody}>
-        {dailyEntryArray.map((entry, index) => {
-          return (
-            <tr key={index}>
-              <td>{entry.date.toDateString()}</td>
-              <td>{entry.hours}</td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
+    <div className={styles.tableList}>
+      {dailyTableList.entry.map((entry, index) => {
+        return <TableWithDate key={index} id={entry.id} projects={entry.projects} />
+      })}
+    </div>
   )
 }
 
@@ -74,64 +142,51 @@ function WeeklyReport({ registeredEntries }: { registeredEntries: Array<Register
   // Bundle all the entries for the same week
   const weeklyEntries = registeredEntries.reduce((acc, entry) => {
     const week = getWeek(entry.date)
-    if (!acc[week]) {
-      acc[week] = { date: entry.date, hours: 0 }
+    const key = `${week}-${entry.project}`
+    if (!acc[key]) {
+      acc[key] = { date: entry.date, project: entry.project, hours: 0 }
     }
-    acc[week].hours += entry.hours
+    acc[key].hours += entry.hours
     return acc
-  }, {} as { [key: number]: { date: Date, hours: number } })
+  }, {} as { [key: string]: { date: Date, project: string, hours: number } })
 
   // Convert the object back to an array
   const weeklyEntryArray = Object.values(weeklyEntries)
 
+  // Transform to a daily table list
+  var weeklyTableList: TableList = { entry: [] }
+
+  weeklyEntryArray.forEach((entry) => {
+    const week = getWeek(entry.date)
+    const project = entry.project
+    const hours = entry.hours
+
+    const existingEntry = weeklyTableList.entry.find((entry) => entry.id === week.toString())
+    if (existingEntry) {
+      const existingProject = existingEntry.projects.find((p) => p.name === project)
+      if (existingProject) {
+        existingProject.hours += hours
+      } else {
+        existingEntry.projects.push({ name: project, hours: hours })
+      }
+    } else {
+      weeklyTableList.entry.push({
+        id: week.toString(),
+        projects: [{ name: project, hours: hours }]
+      })
+    }
+  })
+
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Week</th>
-          <th>Hours</th>
-        </tr>
-      </thead>
-      <tbody>
-        {weeklyEntryArray.map((entry, index) => {
-          return (
-            <tr key={index}>
-              <td>{getWeek(entry.date)}</td>
-              <td>{entry.hours}</td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
+    <div className={styles.tableList}>
+      {weeklyTableList.entry.map((entry, index) => {
+        return <TableWithDate key={index} id={entry.id} projects={entry.projects} />
+      })}
+    </div>
   )
 }
 
 function MonthlyReport({ registeredEntries }: { registeredEntries: Array<RegisteredEntry> }) {
-  // Bundle all the entries for the same month and year
-  const monthlyEntries = registeredEntries.reduce((acc, entry) => {
-    const key = entry.date.getMonth() + '-' + entry.date.getFullYear()
-    if (!acc[key]) {
-      acc[key] = { date: entry.date, hours: 0 }
-    }
-    acc[key].hours += entry.hours
-    return acc
-  }
-  , {} as { [key: string]: { date: Date, hours: number } })
-
-  // Convert the object back to an array
-  const monthlyEntryArray = Object.values(monthlyEntries)
-
-  // Sort the array by date
-  monthlyEntryArray.sort((a, b) => {
-    if (a.date < b.date) {
-      return -1
-    }
-    if (a.date > b.date) {
-      return 1
-    }
-    return 0
-  })
-
   function getMonthName(month: number) {
     const months = [
       "January", "February", "March", "April",
@@ -141,25 +196,45 @@ function MonthlyReport({ registeredEntries }: { registeredEntries: Array<Registe
     return months[month]
   }
 
+  // Bundle all the entries for the same month and year
+  const monthlyEntries = registeredEntries.reduce((acc, entry) => {
+    const key = entry.date.getMonth() + '-' + entry.date.getFullYear() + '-' + entry.project
+    if (!acc[key]) {
+      acc[key] = { date: entry.date, project: entry.project, hours: 0 }
+    }
+    acc[key].hours += entry.hours
+    return acc
+  }
+  , {} as { [key: string]: { date: Date, project: string, hours: number } })
+
+  // Convert the object back to an array
+  const monthlyEntryArray = Object.values(monthlyEntries)
+
+  // Transform to a monthly table list
+  var monthlyTableList: TableList = { entry: [] }
+
+  monthlyEntryArray.forEach((entry) => {
+    const month = entry.date.getMonth()
+    const year = entry.date.getFullYear()
+    const hours = entry.hours
+
+    const existingEntry = monthlyTableList.entry.find((entry) => entry.id === `${getMonthName(month)} ${year}`)
+    if (existingEntry) {
+      existingEntry.projects.push({ name: entry.project, hours: hours })
+    } else {
+      monthlyTableList.entry.push({
+        id: `${getMonthName(month)} ${year}`,
+        projects: [{ name: entry.project, hours: hours }]
+      })
+    }
+  })
+
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Month</th>
-          <th>Hours</th>
-        </tr>
-      </thead>
-      <tbody>
-        {monthlyEntryArray.map((entry, index) => {
-          return (
-            <tr key={index}>
-              <td>{`${getMonthName(entry.date.getMonth())} - ${entry.date.getFullYear()}`}</td>
-              <td>{entry.hours}</td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
+    <div className={styles.tableList}>
+      {monthlyTableList.entry.map((entry, index) => {
+        return <TableWithDate key={index} id={entry.id} projects={entry.projects} />
+      })}
+    </div>
   )
 }
 
@@ -174,7 +249,6 @@ export function TimeReportView({ registeredEntries }: { registeredEntries: Array
     <>
       <div className={styles.header}>
         <h2>Time report</h2>
-        <p>Report style = {reportStyle}</p>
         <select className={styles.select} value={reportStyle} onChange={handleReportStyleChange}>
           <option value="raw">All entries</option>
           <option value="daily">Day by day</option>
