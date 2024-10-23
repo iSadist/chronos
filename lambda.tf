@@ -4,6 +4,8 @@ data "archive_file" "register_zip" {
   output_path = "register.zip"
 }
 
+// MARK: Register Lambda
+
 resource "aws_lambda_function" "register_lambda" {
   filename      = "register.zip"
   function_name = "RegisterFunction"
@@ -11,6 +13,15 @@ resource "aws_lambda_function" "register_lambda" {
   handler       = "register.handler"
   source_code_hash = data.archive_file.register_zip.output_base64sha256
   runtime       = "nodejs16.x"
+}
+
+resource "aws_lambda_function" "delete_entry_lambda" {
+  filename         = "register.zip"
+  function_name    = "DeleteEntryFunction"
+  role             = aws_iam_role.lambda_exec_role.arn
+  handler          = "register.delete"
+  source_code_hash = data.archive_file.register_zip.output_base64sha256
+  runtime          = "nodejs16.x"
 }
 
 resource "aws_lambda_function" "entries_options_lambda" {

@@ -102,6 +102,20 @@ class API {
         return response.json()
     }
 
+    async deleteTimeEntry(entryId: string) {
+        const path = `${this.baseURL}/entries?EntryId=${entryId}`
+        const parameters = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+
+        const response = await fetch(path, parameters)
+
+        return response.json()
+    }
+
     async getTimeEntries(props: GetTimeEntriesProps): Promise<DailyReportResponse> {
         const queryParams = new URLSearchParams({
             clientId: props.clientId,

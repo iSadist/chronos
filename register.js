@@ -23,6 +23,17 @@ function registerTimeEntry(clientId, duration, date, userId) {
     return dynamo.put(params).promise();
 }
 
+function deleteTimeEntry(id) {
+    const params = {
+        TableName: 'TimeEntries',
+        Key: {
+            EntryId: id
+        }
+    };
+
+    return dynamo.delete(params).promise();
+}
+
 exports.handler = async (event) => {
     try {
         const body = JSON.parse(event.body);
@@ -61,6 +72,37 @@ exports.handler = async (event) => {
         };
 
         return response;
+    }
+};
+
+exports.delete = async (event) => {
+    try {
+        const { EntryId } = event.queryStringParameters;
+
+        if (!EntryId) {
+            return {
+                statusCode: 400,
+                headers: { ...CORS_HEADERS },
+                body: JSON.stringify({ message: 'Invalid request. Missing field `EntryId`.' })
+            };
+        }
+
+        await deleteTimeEntry(EntryId);
+
+        return {
+            statusCode: 200,
+            headers: { ...CORS_HEADERS },
+            body: JSON.stringify({ message: 'Time entry deleted.' })
+        };
+    }
+    catch (error) {
+        console.error(error);
+
+        return {
+            statusCode: 500,
+            headers: { ...CORS_HEADERS },
+            body: JSON.stringify({ message: 'Could not delete time entry.' })
+        };
     }
 };
 

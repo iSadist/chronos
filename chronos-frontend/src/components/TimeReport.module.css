@@ -30,3 +30,8 @@
     border-collapse: collapse;
     margin-top: 1rem;
 }
+
+.actionColumn {
+    width: 25px;
+    border: none;
+}

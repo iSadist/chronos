@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { RegisteredEntry } from "@/common-types"
+import { DeleteButton } from "@/components/Button"
 
 import styles from "./TimeReport.module.css"
 
@@ -54,7 +55,7 @@ function TableWithDate({ id, projects }: Entry) {
  * @param registeredEntries
  * @returns 
  */
-function AllEntryReport({ registeredEntries }: { registeredEntries: Array<RegisteredEntry> }) {
+function AllEntryReport({ registeredEntries, onDelete }: { registeredEntries: Array<RegisteredEntry>, onDelete?: (entryId: string) => void }) {
   // Sort the entries by date
   registeredEntries.sort((a, b) => {
     if (a.date < b.date) {
@@ -73,6 +74,7 @@ function AllEntryReport({ registeredEntries }: { registeredEntries: Array<Regist
           <th>Project</th>
           <th>Date</th>
           <th>Hours</th>
+          <th className={styles.actionColumn} />
         </tr>
       </thead>
       <tbody>
@@ -82,6 +84,9 @@ function AllEntryReport({ registeredEntries }: { registeredEntries: Array<Regist
               <td>{entry.project}</td>
               <td>{entry.date.toDateString()}</td>
               <td>{entry.hours}</td>
+              <td className={styles.actionColumn}><DeleteButton action={() => {
+                onDelete?.(entry.entryId)
+              }} /></td>
             </tr>
           )
         })}
@@ -238,7 +243,7 @@ function MonthlyReport({ registeredEntries }: { registeredEntries: Array<Registe
   )
 }
 
-export function TimeReportView({ registeredEntries }: { registeredEntries: Array<RegisteredEntry> }) {
+export function TimeReportView({ registeredEntries, onDelete }: { registeredEntries: Array<RegisteredEntry>, onDelete?: (entryId: string) => void }) {
   const [reportStyle, setReportStyle] = useState("raw")
 
   const handleReportStyleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -258,7 +263,7 @@ export function TimeReportView({ registeredEntries }: { registeredEntries: Array
       </div>
       <p>Get a time report for a project</p>
 
-      {reportStyle === "raw" && <AllEntryReport registeredEntries={registeredEntries} />}
+      {reportStyle === "raw" && <AllEntryReport registeredEntries={registeredEntries} onDelete={onDelete} />}
       {reportStyle === "daily" && <DailyReport registeredEntries={registeredEntries} />}
       {reportStyle === "weekly" && <WeeklyReport registeredEntries={registeredEntries} />}
       {reportStyle === "monthly" && <MonthlyReport registeredEntries={registeredEntries} />}

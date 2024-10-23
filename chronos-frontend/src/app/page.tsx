@@ -57,7 +57,12 @@ export default function Home() {
     }
 
     return response.data.map((entry: DailyReportEntry) => {
-      return { hours: entry.Duration, date: new Date(entry.Date), project: entry.ClientId }
+      return {
+        hours: entry.Duration,
+        date: new Date(entry.Date),
+        project: entry.ClientId,
+        entryId: entry.EntryId
+      }
     })
   }, [])
 
@@ -151,6 +156,19 @@ export default function Home() {
     await refreshClientList()
   }, [refreshClientList, items])
 
+  const deleteEntry = useCallback(async (entryId: string) => {
+    const api = new API()
+    const response = await api.deleteTimeEntry(entryId)
+
+    if (response.error) {
+      console.error(response.error)
+      return
+    }
+
+    await refreshTimeEntries()
+  }
+  , [refreshTimeEntries])
+
   useEffect(() => {
     refreshClientList()
   }, [refreshClientList])
@@ -176,7 +194,7 @@ export default function Home() {
         </section>
 
         <section className={styles.section}>
-          <TimeReportView registeredEntries={registeredEntries} />
+          <TimeReportView registeredEntries={registeredEntries} onDelete={deleteEntry} />
         </section>
       </div>
     </main>
