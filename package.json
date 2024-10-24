@@ -10,7 +10,6 @@
   "author": "Jan Svensson",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.1667.0",
-    "react-spinners": "^0.14.1"
+    "aws-sdk": "^2.1667.0"
   }
 }
