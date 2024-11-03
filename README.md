@@ -23,7 +23,23 @@ curl -X POST -H "Content-Type: application/json" \
 Tools and frameworks
 1. NextJS
 2. AWS Cognito
-3. AWS Amplify or AWS S3 + Cloudfront
+3. AWS Amplify
+
+# Cognito
+
+1. Create a User Pool manually through the console
+2. Get `Token signing key URL` example `https://cognito-idp.eu-north-1.amazonaws.com/eu-north-123abc456`
+3. Get audience from Cognito -> App Clients -> Client ID example `12345abcde12345abcde12345`
+4. Navigate to API Gateway
+5. Choose the API
+6. Click Develop -> Authorization -> Manage Authorizers -> Create
+7. Select JWT
+8. Fill in Issuer ID = Token signing key URL and Audience from step 3
+9. Click Create
+10. Go to `Routes`
+11. Attach the new authorizer to the endpoints
+
+Challenge: Do this setup in Terraform
 
 # Deploy steps
 
