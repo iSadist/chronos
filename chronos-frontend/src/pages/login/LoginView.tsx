@@ -13,6 +13,7 @@ const userPool = new CognitoUserPool(poolData)
 function LoginView() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
   async function handleSignIn(event: React.FormEvent) {
     event.preventDefault()
@@ -40,6 +41,7 @@ function LoginView() {
       },
       onFailure: (err) => {
         console.error('Error signing in', err)
+        setError(err.message)
       },
     })
   }
@@ -71,6 +73,7 @@ function LoginView() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button className={styles.signin}>Sign In</button>
+        {error && <p className={styles.error}>{error}</p>}
         <a href="/reset-password" className={styles.link}>
           Forgot your password?
         </a>
