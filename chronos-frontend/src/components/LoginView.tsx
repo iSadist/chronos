@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { CognitoUserPool, CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js'
 
+import styles from './LoginView.module.css'
+
 const poolData = {
   UserPoolId: process.env.NEXT_PUBLIC_USER_POOL_ID || '', // Your user pool id here
   ClientId: process.env.NEXT_PUBLIC_CLIENT_ID || '', // Your client id here
@@ -12,7 +14,9 @@ function LoginView({ onLogin }: { onLogin: () => void }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  async function handleSignIn() {
+  async function handleSignIn(event: React.FormEvent) {
+    event.preventDefault()
+
     const authenticationDetails = new AuthenticationDetails({
       Username: username,
       Password: password,
@@ -48,20 +52,33 @@ function LoginView({ onLogin }: { onLogin: () => void }) {
   }
 
   return (
-    <div>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={handleSignIn}>Sign In</button>
+    <div className={styles.background}>
+      <form className={styles.container} onSubmit={handleSignIn}>
+        <h1 className={styles.title}>Sign In</h1>
+        <input
+          className={styles.field}
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          className={styles.field}
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button className={styles.signin}>Sign In</button>
+        <a href="/reset-password" className={styles.link}>
+          Forgot your password?
+        </a>
+        <div className={styles.signup}>
+          <a href="/signup" className={styles.link}>
+            {"Don't have an account? Sign up"}
+          </a>
+        </div>
+      </form>
     </div>
   )
 }
