@@ -162,8 +162,17 @@ export default function MainView() {
     }
 
     await refreshTimeEntries()
-  }
-  , [refreshTimeEntries])
+  }, [refreshTimeEntries])
+
+  /**
+   * Logout the user by removing the access token and user ID from local storage
+   * @returns void
+   */
+  const logout = useCallback(() => {
+    localStorage.removeItem("accessToken")
+    localStorage.removeItem("userId")
+    window.location.href = "/login"
+  }, [])
 
   useEffect(() => {
     refreshClientList()
@@ -176,7 +185,10 @@ export default function MainView() {
   return (
     <main className={styles.main}>
       <header className={styles.header}>
-        <h1>Chronos</h1>
+        <div className={styles.row}>
+          <h1>Chronos</h1>
+          <button className={styles.logout} onClick={logout}>Logout</button>
+        </div>
         <p>Chronos is a time tracking application.</p>
       </header>
 

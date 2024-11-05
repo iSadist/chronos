@@ -17,6 +17,19 @@
   gap: 1rem;
 }
 
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.logout {
+  padding: 10px;
+  cursor: pointer;
+}
+
 .content {
   display: flex;
   flex-direction: row;
