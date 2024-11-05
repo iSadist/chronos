@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { CognitoUserPool, CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js'
 
 import styles from './LoginView.module.css'
@@ -74,13 +75,13 @@ function LoginView() {
         />
         <button className={styles.signin}>Sign In</button>
         {error && <p className={styles.error}>{error}</p>}
-        <a href="/reset-password" className={styles.link}>
+        <Link href="/reset-password" className={styles.link}>
           Forgot your password?
-        </a>
+        </Link>
         <div className={styles.signup}>
-          <a href="/signup" className={styles.link}>
+          <Link href="/signup" className={styles.link}>
             {"Don't have an account? Sign up"}
-          </a>
+          </Link>
         </div>
       </form>
     </div>

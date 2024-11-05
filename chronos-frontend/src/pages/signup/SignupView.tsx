@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js'
 
 import styles from './SignupView.module.css'
@@ -106,7 +107,7 @@ function SignupView() {
       />
       <button className={styles.button} type="submit" disabled={!valid}>Sign Up</button>
       {error ? <p className={styles.error}>{error}</p> : null}
-      <a className={styles.link} href="/login">Already have an account? Log in</a>
+      <Link className={styles.link} href="/login">Already have an account? Log in</Link>
     </form>
   )
 
