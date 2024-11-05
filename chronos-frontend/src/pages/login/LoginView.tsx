@@ -59,7 +59,7 @@ function LoginView() {
         <input
           className={styles.field}
           type="text"
-          placeholder="Username"
+          placeholder="Email"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />

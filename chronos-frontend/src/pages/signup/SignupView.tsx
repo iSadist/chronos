@@ -69,6 +69,7 @@ function SignupView() {
         />
         <button className={styles.button} type="submit" disabled={!valid}>Sign Up</button>
         {error ? <p className={styles.error}>{error}</p> : null}
+        <a className={styles.link} href="/login">Already have an account? Log in</a>
       </form>
     </div>
   )
