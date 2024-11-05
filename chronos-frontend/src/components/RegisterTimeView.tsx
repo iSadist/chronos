@@ -14,6 +14,12 @@ const darkTheme = createTheme({
   },
 })
 
+const lightTheme = createTheme({
+  palette: {
+    mode: 'light',
+  },
+})
+
 type RegisterTimeViewProps = {
   items: Array<ItemData>
   onRegister: (hours: number, date: Date, project: string) => Promise<void>
@@ -65,8 +71,12 @@ function RegisterTimeView({
     setProject(items[0]?.name)
   }, [items])
 
+  // Get the browser prefers-color-scheme
+  const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)')
+  const theme = prefersDarkScheme.matches ? darkTheme : lightTheme
+
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <h2>Register time</h2>
       <p>Register time on a project.</p>
 

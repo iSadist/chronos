@@ -48,7 +48,7 @@
   flex-grow: 1;
   gap: 1rem;
   width: 40%;
-  background-color: #0f0f0f;
+  background-color: rgb(var(--section-background-rgb));
   padding: 2rem;
   border-radius: 1rem;
 }
