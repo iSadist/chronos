@@ -28,7 +28,7 @@ export type DailyReportResponse = {
 
 class API {
     baseURL: string  = 'https://sfyij39l9a.execute-api.eu-north-1.amazonaws.com/dev'
-    userId: string = 'Net'
+    userId: string = `${localStorage.getItem('userId')}`
 
     async getClients(): Promise<[string]> {
         const path = `${this.baseURL}/clients?userId=${this.userId}`
@@ -36,6 +36,7 @@ class API {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `${localStorage.getItem('accessToken')}`,
             },
         }
 
@@ -49,6 +50,7 @@ class API {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `${localStorage.getItem('accessToken')}`,
             },
             body: JSON.stringify({
                 userId: this.userId,
@@ -67,6 +69,7 @@ class API {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `${localStorage.getItem('accessToken')}`,
             },
         }
 
@@ -93,6 +96,7 @@ class API {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `${localStorage.getItem('accessToken')}`,
             },
             body: JSON.stringify(entry),
         }
@@ -108,6 +112,7 @@ class API {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `${localStorage.getItem('accessToken')}`,
             },
         }
 
@@ -131,6 +136,7 @@ class API {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `${localStorage.getItem('accessToken')}`,
             },
         }
 
