@@ -1,18 +1,16 @@
 'use client'
 
-import React, { useState } from "react"
-import LoginView from "@/components/LoginView"
+import React from "react"
 import MainView from "@/components/MainView"
 
 export default function Home() {
-  const [loggedIn, setLoggedIn] = useState(false)
+  // Check if there is a token and user id in local storage
+  const accessToken = localStorage.getItem("accessToken")
+  const userId = localStorage.getItem("userId")
 
-  if (!loggedIn) {
-    return (
-      <LoginView onLogin={() => {
-        setLoggedIn(true)
-      }} />
-    )
+  if (!accessToken || !userId) {
+    // Navigate to login page if not logged in
+    window.location.href = "/login"
   }
 
   return <MainView />

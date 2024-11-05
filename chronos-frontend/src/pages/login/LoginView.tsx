@@ -10,7 +10,7 @@ const poolData = {
 
 const userPool = new CognitoUserPool(poolData)
 
-function LoginView({ onLogin }: { onLogin: () => void }) {
+function LoginView() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -35,7 +35,8 @@ function LoginView({ onLogin }: { onLogin: () => void }) {
         const username = result.getIdToken().payload['cognito:username']
         storeUserId(username)
         storeAccessToken(token)
-        onLogin()
+
+        window.location.href = '/'
       },
       onFailure: (err) => {
         console.error('Error signing in', err)
