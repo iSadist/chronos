@@ -73,7 +73,7 @@ function RegisterTimeView({
 
   let theme = lightTheme
 
-  if (window) {
+  if (typeof window !== "undefined") {
     // Get the browser prefers-color-scheme
     const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)')
     theme = prefersDarkScheme.matches ? darkTheme : lightTheme

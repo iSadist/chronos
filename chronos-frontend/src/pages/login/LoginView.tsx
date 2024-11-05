@@ -38,7 +38,9 @@ function LoginView() {
         storeUserId(username)
         storeAccessToken(token)
 
-        window.location.href = '/'
+        if (typeof window !== "undefined") {
+          window.location.href = '/'
+        }
       },
       onFailure: (err) => {
         console.error('Error signing in', err)

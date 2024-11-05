@@ -171,7 +171,10 @@ export default function MainView() {
   const logout = useCallback(() => {
     localStorage.removeItem("accessToken")
     localStorage.removeItem("userId")
-    window.location.href = "/login"
+
+    if (typeof window !== "undefined") {
+      window.location.href = "/login"
+    }
   }, [])
 
   useEffect(() => {
