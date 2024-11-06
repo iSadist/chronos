@@ -1,9 +1,10 @@
 const AWS = require('aws-sdk');
+// const jwt = require('jsonwebtoken');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*", // Allow all origins
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE"
 };
 
@@ -157,7 +158,25 @@ async function deleteClient(clientId, userId) {
 }
 
 exports.handler = async (event) => {
-    const { userId } = event.queryStringParameters;
+    return {
+        statusCode: 200,
+        headers: { ...CORS_HEADERS },
+        body: JSON.stringify({ message: 'Hello World!' }),
+    };
+
+    const token = event.headers.authorization;
+    let userId;
+
+    try {
+        const decoded = jwt.decode(token);
+        userId = decoded.sub;
+    } catch (error) {
+        return {
+            statusCode: 401,
+            headers: { ...CORS_HEADERS },
+            body: JSON.stringify({ error: 'Unauthorized. Could not decode token' })
+        };
+    }
 
     if(!userId) {
         return {
@@ -165,6 +184,12 @@ exports.handler = async (event) => {
             headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'User ID is required.'}),
         };
+    }
+
+    return {
+        statusCode: 200,
+        headers: { ...CORS_HEADERS },
+        body: JSON.stringify({ message: 'Hello World!', token, userId }),
     }
 
     return await getAllClients(userId);

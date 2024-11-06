@@ -3,9 +3,11 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*", // Allow all origins
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE"
 };
+
+// TODO: Get the user ID from the JWT token and use that as the user ID
 
 // Register a time entry and returns a promise
 function registerTimeEntry(clientId, duration, date, userId) {
