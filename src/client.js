@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-// const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const CORS_HEADERS = {
@@ -32,6 +32,21 @@ const getAllItems = async (userId) => {
     } catch (error) {
         console.error('Could not retrieve items. Error: ', error);
         return [];
+    }
+}
+
+/**
+ * Decodes a JWT token and returns the user ID
+ * @param {*} token The JWT token
+ * @returns User ID
+ */
+const decodeTokenUserID = (token) => {
+    try {
+        const decoded = jwt.decode(token);
+        return decoded.sub;
+    } catch (error) {
+        console.error('Could not decode token. Error: ', error);
+        return null;
     }
 }
 
@@ -158,40 +173,8 @@ async function deleteClient(clientId, userId) {
 }
 
 exports.handler = async (event) => {
-    return {
-        statusCode: 200,
-        headers: { ...CORS_HEADERS },
-        body: JSON.stringify({ message: 'Hello World!' }),
-    };
-
     const token = event.headers.authorization;
-    let userId;
-
-    try {
-        const decoded = jwt.decode(token);
-        userId = decoded.sub;
-    } catch (error) {
-        return {
-            statusCode: 401,
-            headers: { ...CORS_HEADERS },
-            body: JSON.stringify({ error: 'Unauthorized. Could not decode token' })
-        };
-    }
-
-    if(!userId) {
-        return {
-            statusCode: 400,
-            headers: { ...CORS_HEADERS },
-            body: JSON.stringify({ message: 'User ID is required.'}),
-        };
-    }
-
-    return {
-        statusCode: 200,
-        headers: { ...CORS_HEADERS },
-        body: JSON.stringify({ message: 'Hello World!', token, userId }),
-    }
-
+    const userId = decodeTokenUserID(token);
     return await getAllClients(userId);
 };
 
@@ -204,21 +187,15 @@ exports.options = async (event) => {
 };
 
 exports.create = async (event) => {
-    const { clientId, userId } = event.queryStringParameters;
+    const token = event.headers.authorization;
+    const { clientId } = event.queryStringParameters;
+    const userId = decodeTokenUserID(token);
 
     if (!clientId) {
         return {
             statusCode: 400,
             headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'Client ID is required.'}),
-        };
-    }
-
-    if(!userId) {
-        return {
-            statusCode: 400,
-            headers: { ...CORS_HEADERS },
-            body: JSON.stringify({ message: 'User ID is required.'}),
         };
     }
 
@@ -237,21 +214,15 @@ exports.create = async (event) => {
 };
 
 exports.delete = async (event) => {
-    const { clientId, userId } = event.queryStringParameters;
+    const token = event.headers.authorization;
+    const { clientId } = event.queryStringParameters;
+    const userId = decodeTokenUserID(token);
 
     if (!clientId) {
         return {
             statusCode: 400,
             headers: { ...CORS_HEADERS },
             body: JSON.stringify({ message: 'Client ID is required.'}),
-        };
-    }
-
-    if(!userId) {
-        return {
-            statusCode: 400,
-            headers: { ...CORS_HEADERS },
-            body: JSON.stringify({ message: 'User ID is required.'}),
         };
     }
 

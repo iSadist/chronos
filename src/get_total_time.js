@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+const jwt = require('jsonwebtoken');
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 const CORS_HEADERS = {
@@ -7,7 +8,20 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE"
 };
 
-// TODO: Get the user ID from the JWT token and use that as the user ID
+/**
+ * Decodes a JWT token and returns the user ID
+ * @param {*} token The JWT token
+ * @returns User ID
+ */
+const decodeTokenUserID = (token) => {
+  try {
+      const decoded = jwt.decode(token);
+      return decoded.sub;
+  } catch (error) {
+      console.error('Could not decode token. Error: ', error);
+      return null;
+  }
+}
 
 const getAllItems = async (userId) => {
   const params = {
@@ -163,10 +177,8 @@ exports.handler = async (event) => {
     from,
     to,
     mode,
-    userId,
   } = event.queryStringParameters || {};
-
-  // Validate the input
+  const userId = decodeTokenUserID(event.headers.authorization);
 
   // The client ID is required
   if (!clientId) {
@@ -174,15 +186,6 @@ exports.handler = async (event) => {
       statusCode: 400,
       headers: { ...CORS_HEADERS },
       body: JSON.stringify({ message: 'Client ID is required.' }),
-    };
-  }
-
-  // The user ID is required
-  if (!userId) {
-    return {
-      statusCode: 400,
-      headers: { ...CORS_HEADERS },
-      body: JSON.stringify({ message: 'User ID is required.' }),
     };
   }
 

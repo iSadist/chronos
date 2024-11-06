@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+const jwt = require('jsonwebtoken');
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const CORS_HEADERS = {
@@ -7,7 +8,20 @@ const CORS_HEADERS = {
     "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE"
 };
 
-// TODO: Get the user ID from the JWT token and use that as the user ID
+/**
+ * Decodes a JWT token and returns the user ID
+ * @param {*} token The JWT token
+ * @returns User ID
+ */
+const decodeTokenUserID = (token) => {
+    try {
+        const decoded = jwt.decode(token);
+        return decoded.sub;
+    } catch (error) {
+        console.error('Could not decode token. Error: ', error);
+        return null;
+    }
+  }
 
 // Register a time entry and returns a promise
 function registerTimeEntry(clientId, duration, date, userId) {
@@ -25,7 +39,7 @@ function registerTimeEntry(clientId, duration, date, userId) {
     return dynamo.put(params).promise();
 }
 
-function deleteTimeEntry(id) {
+async function deleteTimeEntry(id, userId) {
     const params = {
         TableName: 'TimeEntries',
         Key: {
@@ -33,10 +47,19 @@ function deleteTimeEntry(id) {
         }
     };
 
+    // Fetch the entry to check the userId
+    const entry = await dynamo.get(params).promise();
+
+    if (!entry.Item || entry.Item.UserId !== userId) {
+        throw new Error('Unauthorized or entry not found.');
+    }
+
     return dynamo.delete(params).promise();
 }
 
 exports.handler = async (event) => {
+    const userId = decodeTokenUserID(event.headers.authorization);
+
     try {
         const body = JSON.parse(event.body);
 
@@ -51,7 +74,7 @@ exports.handler = async (event) => {
         }
 
         const promises = entries.map(entry => {
-            const { clientId, duration, date, userId } = entry;
+            const { clientId, duration, date } = entry;
             return registerTimeEntry(clientId, duration, date, userId);
         });
 
@@ -78,6 +101,8 @@ exports.handler = async (event) => {
 };
 
 exports.delete = async (event) => {
+    const userId = decodeTokenUserID(event.headers.authorization);
+
     try {
         const { EntryId } = event.queryStringParameters;
 
@@ -89,7 +114,7 @@ exports.delete = async (event) => {
             };
         }
 
-        await deleteTimeEntry(EntryId);
+        await deleteTimeEntry(EntryId, userId);
 
         return {
             statusCode: 200,
