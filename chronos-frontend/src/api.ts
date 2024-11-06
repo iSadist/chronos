@@ -2,7 +2,6 @@ type TimeEntry = {
     clientId: string
     duration: number
     date: string
-    userId: string
 }
 
 type GetTimeEntriesProps = {
@@ -28,10 +27,9 @@ export type DailyReportResponse = {
 
 class API {
     baseURL: string  = 'https://sfyij39l9a.execute-api.eu-north-1.amazonaws.com/dev'
-    userId: string = `${localStorage.getItem('userId')}`
 
     async getClients(): Promise<[string]> {
-        const path = `${this.baseURL}/clients?userId=${this.userId}`
+        const path = `${this.baseURL}/clients`
         const parameters = {
             method: 'GET',
             headers: {
@@ -45,7 +43,7 @@ class API {
     }
 
     async createClient(client: string) {
-        const path = `${this.baseURL}/clients?userId=${this.userId}&clientId=${client}`
+        const path = `${this.baseURL}/clients?clientId=${client}`
         const parameters = {
             method: 'POST',
             headers: {
@@ -53,7 +51,6 @@ class API {
                 'Authorization': `${localStorage.getItem('accessToken')}`,
             },
             body: JSON.stringify({
-                userId: this.userId,
                 client: client,
             }),
         }
@@ -64,7 +61,7 @@ class API {
     }
 
     async deleteClient(client: string) {
-        const path = `${this.baseURL}/clients?userId=${this.userId}&clientId=${client}`
+        const path = `${this.baseURL}/clients?clientId=${client}`
         const parameters = {
             method: 'DELETE',
             headers: {
@@ -78,7 +75,7 @@ class API {
         return response.json()
     }
 
-    async registerTime({ clientId, duration, date, userId }: TimeEntry) {
+    async registerTime({ clientId, duration, date }: TimeEntry) {
         const path = `${this.baseURL}/entries`
 
         const entry = {
@@ -87,7 +84,6 @@ class API {
                     'clientId': clientId,
                     'duration': duration,
                     'date': date,
-                    'userId': userId,
                 }
             ]
         }
@@ -127,7 +123,6 @@ class API {
             from: props.from,
             to: props.to,
             mode: props.mode,
-            userId: this.userId,
         }).toString()
 
         const path = `${this.baseURL}/entries?${queryParams}`
