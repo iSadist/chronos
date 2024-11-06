@@ -39,20 +39,25 @@ function registerTimeEntry(clientId, duration, date, userId) {
     return dynamo.put(params).promise();
 }
 
-async function deleteTimeEntry(id, userId) {
+async function validateTimeEntryOwner(entryId, userId) {
+    const params = {
+        TableName: 'TimeEntries',
+        Key: {
+            EntryId: entryId
+        }
+    };
+
+    const entry = await dynamo.get(params).promise();
+    return entry.Item.UserId === userId;
+}
+
+async function deleteTimeEntry(id) {
     const params = {
         TableName: 'TimeEntries',
         Key: {
             EntryId: id
         }
     };
-
-    // Fetch the entry to check the userId
-    const entry = await dynamo.get(params).promise();
-
-    if (!entry.Item || entry.Item.UserId !== userId) {
-        throw new Error('Unauthorized or entry not found.');
-    }
 
     return dynamo.delete(params).promise();
 }
@@ -102,19 +107,28 @@ exports.handler = async (event) => {
 
 exports.delete = async (event) => {
     const userId = decodeTokenUserID(event.headers.authorization);
+    const { EntryId } = event.queryStringParameters;
+    
+    if (!EntryId) {
+        return {
+            statusCode: 400,
+            headers: { ...CORS_HEADERS },
+            body: JSON.stringify({ message: 'Invalid request. Missing field `EntryId`.' })
+        };
+    }
 
     try {
-        const { EntryId } = event.queryStringParameters;
+        const isOwner = await validateTimeEntryOwner(EntryId, userId);
 
-        if (!EntryId) {
+        if (!isOwner) {
             return {
-                statusCode: 400,
+                statusCode: 403,
                 headers: { ...CORS_HEADERS },
-                body: JSON.stringify({ message: 'Invalid request. Missing field `EntryId`.' })
+                body: JSON.stringify({ message: 'You are not authorized to delete this time entry.' })
             };
         }
 
-        await deleteTimeEntry(EntryId, userId);
+        await deleteTimeEntry(EntryId);
 
         return {
             statusCode: 200,
@@ -128,7 +142,7 @@ exports.delete = async (event) => {
         return {
             statusCode: 500,
             headers: { ...CORS_HEADERS },
-            body: JSON.stringify({ message: 'Could not delete time entry.' })
+            body: JSON.stringify({ message: 'Could not delete time entry.', error: error.message })
         };
     }
 };
