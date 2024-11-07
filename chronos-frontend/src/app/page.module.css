@@ -5,6 +5,10 @@
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
+
+  @media screen and (max-width: 950px) {
+    padding: 1rem;
+  }
 }
 
 .header {
@@ -51,4 +55,8 @@
   background-color: rgb(var(--section-background-rgb));
   padding: 2rem;
   border-radius: 1rem;
+
+  @media screen and (max-width: 950px) {
+    width: 100%;
+  }
 }

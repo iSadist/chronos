@@ -10,6 +10,12 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease;
   margin-left: 1rem;
+  max-width: 100px;
+
+  @media screen and (max-width: 950px) {
+    margin-left: 0;
+    max-width: unset;
+  }
 }
 
 .field:focus {
@@ -39,6 +45,25 @@
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
+  @media screen and (max-width: 950px) {
+    justify-content: flex-end;
+  }
+}
+
+.quickButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+}
+
+.submit {
+  width: 100%;
 }
 
 .registerForm {

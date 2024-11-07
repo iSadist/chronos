@@ -3,7 +3,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { Button, LoadingButton, NeutralButton } from "@/components/Button"
+import { LoadingButton, NeutralButton } from "@/components/Button"
 import { ItemData } from "@/components/RowItem"
 
 import styles from "./RegisterTimeView.module.css"
@@ -104,12 +104,16 @@ function RegisterTimeView({
             Time spent
           </label>
           <input className={styles.field} type="number" onChange={onChange} value={hours} />
-          <NeutralButton action={handleQuickSelection} text={'1'} />
-          <NeutralButton action={handleQuickSelection} text={'2'} />
-          <NeutralButton action={handleQuickSelection} text={'4'} />
-          <NeutralButton action={handleQuickSelection} text={'8'} />
+          <div className={styles.quickButtons}>
+            <NeutralButton action={handleQuickSelection} text={'1'} />
+            <NeutralButton action={handleQuickSelection} text={'2'} />
+            <NeutralButton action={handleQuickSelection} text={'4'} />
+            <NeutralButton action={handleQuickSelection} text={'8'} />
+          </div>
         </div>
-        <LoadingButton loading={loading} text="Submit" action={() => {}} />
+        <div className={styles.submit}>
+          <LoadingButton loading={loading} text="Submit" action={() => {}} />
+        </div>
       </form>
     </ThemeProvider>
   )

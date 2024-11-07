@@ -29,6 +29,14 @@
     width: calc(25% - 25px);
     border-collapse: collapse;
     margin-top: 1rem;
+
+    @media screen and (max-width: 1150px) {
+        width: calc(50% - 25px);
+    }
+
+    @media screen and (max-width: 750px) {
+        width: 100%
+    }
 }
 
 .actionColumn {
