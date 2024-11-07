@@ -90,7 +90,7 @@ export default function MainView() {
     }
 
     const api = new API()
-    const response = await api.registerTime({ clientId: project, duration: hours, date: date.toISOString(), userId: api.userId })
+    const response = await api.registerTime({ clientId: project, duration: hours, date: date.toISOString() })
 
     await refreshTimeEntries()
   }, [refreshTimeEntries])
