@@ -40,6 +40,19 @@ export default function MainView() {
   const [loading, setLoading] = useState(true)
 
   /**
+   * Logout the user by removing the access token and user ID from local storage
+   * @returns void
+   */
+  const logout = useCallback(() => {
+    localStorage.removeItem("accessToken")
+    localStorage.removeItem("userId")
+
+    if (typeof window !== "undefined") {
+      window.location.href = "/login"
+    }
+  }, [])
+
+  /**
    * Fetch the time entries for a client
    * @param clientId The ID of the client to fetch time entries for
    * @returns An array of time entries for the client
@@ -47,6 +60,10 @@ export default function MainView() {
   const getEntriesForClient = useCallback(async (clientId: string) => {
     const api = new API()
     const response = await api.getTimeEntries({ clientId: clientId, from: '2021-01-01', to: '2024-12-31', mode: 'daily' })
+
+    if (response === null) {
+      logout(); return []
+    }
 
     if (!Array.isArray(response.data)) {
       return []
@@ -60,7 +77,7 @@ export default function MainView() {
         entryId: entry.EntryId
       }
     })
-  }, [])
+  }, [logout])
 
   /**
    * Refresh the list of time entries for all clients
@@ -102,13 +119,18 @@ export default function MainView() {
   const refreshClientList = useCallback(async () => {
     const api = new API()
     const response = await api.getClients()
+
+    if (response === null) {
+      logout(); return
+    }
+
     const items = response.map((item: string) => {
       return { name: item, isUpdating: false }
     })
 
     setItems(items)
     setLoading(false)
-  }, [])
+  }, [logout])
 
   /**
    * Add a new client to the list
@@ -163,19 +185,6 @@ export default function MainView() {
 
     await refreshTimeEntries()
   }, [refreshTimeEntries])
-
-  /**
-   * Logout the user by removing the access token and user ID from local storage
-   * @returns void
-   */
-  const logout = useCallback(() => {
-    localStorage.removeItem("accessToken")
-    localStorage.removeItem("userId")
-
-    if (typeof window !== "undefined") {
-      window.location.href = "/login"
-    }
-  }, [])
 
   useEffect(() => {
     refreshClientList()

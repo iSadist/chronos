@@ -28,7 +28,7 @@ export type DailyReportResponse = {
 class API {
     baseURL: string  = 'https://sfyij39l9a.execute-api.eu-north-1.amazonaws.com/dev'
 
-    async getClients(): Promise<[string]> {
+    async getClients(): Promise<[string] | null> {
         const path = `${this.baseURL}/clients`
         const parameters = {
             method: 'GET',
@@ -38,8 +38,17 @@ class API {
             },
         }
 
-        const response = await fetch(path, parameters)
-        return response.json()
+        try {
+            const response = await fetch(path, parameters)
+
+            if (response.status === 401) {
+                return Promise.resolve(null)
+            }
+
+            return response.json()
+        } catch {
+            return Promise.resolve(null)
+        }
     }
 
     async createClient(client: string) {
@@ -55,9 +64,17 @@ class API {
             }),
         }
 
-        const response = await fetch(path, parameters)
+        try {
+            const response = await fetch(path, parameters)
 
-        return response.json()
+            if (response.status === 401) {
+                return Promise.resolve(null)
+            }
+
+            return response.json()
+        } catch {
+            return Promise.resolve(null)
+        }
     }
 
     async deleteClient(client: string) {
@@ -70,9 +87,17 @@ class API {
             },
         }
 
-        const response = await fetch(path, parameters)
+        try {
+            const response = await fetch(path, parameters)
 
-        return response.json()
+            if (response.status === 401) {
+                return Promise.resolve(null)
+            }
+
+            return response.json()
+        } catch {
+            return Promise.resolve(null)
+        }
     }
 
     async registerTime({ clientId, duration, date }: TimeEntry) {
@@ -97,9 +122,17 @@ class API {
             body: JSON.stringify(entry),
         }
 
-        const response = await fetch(path, parameters)
+        try {
+            const response = await fetch(path, parameters)
 
-        return response.json()
+            if (response.status === 401) {
+                return Promise.resolve(null)
+            }
+
+            return response.json()
+        } catch {
+            return Promise.resolve(null)
+        }
     }
 
     async deleteTimeEntry(entryId: string) {
@@ -112,12 +145,20 @@ class API {
             },
         }
 
-        const response = await fetch(path, parameters)
+        try {
+            const response = await fetch(path, parameters)
 
-        return response.json()
+            if (response.status === 401) {
+                return Promise.resolve(null)
+            }
+
+            return response.json()
+        } catch {
+            return Promise.resolve(null)
+        }
     }
 
-    async getTimeEntries(props: GetTimeEntriesProps): Promise<DailyReportResponse> {
+    async getTimeEntries(props: GetTimeEntriesProps): Promise<DailyReportResponse | null> {
         const queryParams = new URLSearchParams({
             clientId: props.clientId,
             from: props.from,
@@ -135,9 +176,17 @@ class API {
             },
         }
 
-        const response = await fetch(path, parameters)
+        try {
+            const response = await fetch(path, parameters)
 
-        return response.json()
+            if (response.status === 401) {
+                return Promise.resolve(null)
+            }
+
+            return response.json()
+        } catch {
+            return Promise.resolve(null)
+        }
     }
 }
 
