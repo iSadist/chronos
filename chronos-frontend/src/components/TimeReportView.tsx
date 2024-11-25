@@ -113,6 +113,17 @@ function DailyReport({ registeredEntries }: { registeredEntries: Array<Registere
   // Transform to a daily table list
   var dailyTableList: TableList = { entry: [] }
 
+  // Sort according to date
+  dailyEntryArray.sort((a, b) => {
+    if (a.date < b.date) {
+      return -1
+    }
+    if (a.date > b.date) {
+      return 1
+    }
+    return 0
+  })
+
   dailyEntryArray.forEach((entry) => {
     const date = entry.date.toDateString()
     const project = entry.project
@@ -160,6 +171,17 @@ function WeeklyReport({ registeredEntries }: { registeredEntries: Array<Register
 
   // Transform to a daily table list
   var weeklyTableList: TableList = { entry: [] }
+
+  // Sort according to week number
+  weeklyEntryArray.sort((a, b) => {
+    if (a.date < b.date) {
+      return -1
+    }
+    if (a.date > b.date) {
+      return 1
+    }
+    return 0
+  })
 
   weeklyEntryArray.forEach((entry) => {
     const week = getWeek(entry.date)
@@ -217,6 +239,17 @@ function MonthlyReport({ registeredEntries }: { registeredEntries: Array<Registe
 
   // Transform to a monthly table list
   var monthlyTableList: TableList = { entry: [] }
+
+  // Sort according to month
+  monthlyEntryArray.sort((a, b) => {
+    if (a.date < b.date) {
+      return -1
+    }
+    if (a.date > b.date) {
+      return 1
+    }
+    return 0
+  })
 
   monthlyEntryArray.forEach((entry) => {
     const month = entry.date.getMonth()
