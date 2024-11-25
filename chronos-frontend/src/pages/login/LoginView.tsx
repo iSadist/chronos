@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Loader from "react-spinners/PulseLoader"
 import Link from 'next/link'
 import { CognitoUserPool, CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js'
 
@@ -15,9 +16,11 @@ function LoginView() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   async function handleSignIn(event: React.FormEvent) {
     event.preventDefault()
+    setLoading(true)
 
     const authenticationDetails = new AuthenticationDetails({
       Username: username,
@@ -33,6 +36,8 @@ function LoginView() {
 
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
+        setLoading(false)
+
         const token = result.getIdToken().getJwtToken()
         const username = result.getIdToken().payload['cognito:username']
         storeUserId(username)
@@ -44,6 +49,7 @@ function LoginView() {
       },
       onFailure: (err) => {
         console.error('Error signing in', err)
+        setLoading(false)
         setError(err.message)
       },
     })
@@ -75,7 +81,7 @@ function LoginView() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button className={styles.signin}>Sign In</button>
+        <button disabled={loading} className={styles.signin}>{loading ? <Loader color='white' /> : 'Sign In'}</button>
         {error && <p className={styles.error}>{error}</p>}
         <Link href="/reset-password" className={styles.link}>
           Forgot your password?
