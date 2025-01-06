@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { RegisteredEntry } from "@/common-types"
 import { DeleteButton } from "@/components/Button"
 
@@ -276,17 +276,66 @@ function MonthlyReport({ registeredEntries }: { registeredEntries: Array<Registe
   )
 }
 
-export function TimeReportView({ registeredEntries, onDelete }: { registeredEntries: Array<RegisteredEntry>, onDelete?: (entryId: string) => void }) {
+type TimeReportViewProps = {
+  registeredEntries: Array<RegisteredEntry>,
+  onDelete?: (entryId: string) => void
+  onSetNewDateRange?: (from: string, to: string) => void
+}
+
+export function TimeReportView({ registeredEntries, onDelete, onSetNewDateRange }: TimeReportViewProps) {
   const [reportStyle, setReportStyle] = useState("raw")
+  const [startDate, setStartDate] = useState(new Date())
+  const [endDate, setEndDate] = useState(new Date())
 
   const handleReportStyleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setReportStyle(event.target.value)
+  }
+
+  function turnDateIntoString(date: Date) {
+    return date.toISOString().split('T')[0]
+  }
+
+  useEffect(() => {
+    const oneYearAgo = new Date()
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+    const today = new Date()
+    setStartDate(oneYearAgo)
+    setEndDate(today)
+    onSetNewDateRange?.(turnDateIntoString(oneYearAgo), turnDateIntoString(today))
+  }, [onSetNewDateRange])
+
+  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStartDate(new Date(event.target.value))
+    onSetNewDateRange?.(event.target.value, turnDateIntoString(endDate))
+  }
+
+  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEndDate(new Date(event.target.value))
+    onSetNewDateRange?.(turnDateIntoString(startDate), event.target.value)
   }
 
   return (
     <>
       <div className={styles.header}>
         <h2>Time report</h2>
+        <div className={styles.dateRange}>
+          <div>
+            <label>From:</label>
+            <input
+              type="date"
+              value={turnDateIntoString(startDate)}
+              onChange={handleStartDateChange}
+            />
+          </div>
+          <div>
+            <label>To:</label>
+            <input
+              type="date"
+              value={turnDateIntoString(endDate)}
+              onChange={handleEndDateChange}
+            />
+          </div>
+        </div>
         <select className={styles.select} value={reportStyle} onChange={handleReportStyleChange}>
           <option value="raw">All entries</option>
           <option value="daily">Day by day</option>

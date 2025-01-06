@@ -6,6 +6,14 @@
     width: 100%;
 }
 
+.dateRange {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 300px;
+}
+
 .select {
     width: 150px;
     padding: 0.5rem;

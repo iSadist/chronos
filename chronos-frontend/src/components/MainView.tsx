@@ -38,6 +38,8 @@ export default function MainView() {
   const [items, setItems] = useState<Array<ItemData>>([])
   const [registeredEntries, setRegisteredEntries] = useState<Array<RegisteredEntry>>([])
   const [loading, setLoading] = useState(true)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
 
   /**
    * Logout the user by removing the access token and user ID from local storage
@@ -59,7 +61,7 @@ export default function MainView() {
    * */
   const getEntriesForClient = useCallback(async (clientId: string) => {
     const api = new API()
-    const response = await api.getTimeEntries({ clientId: clientId, from: '2021-01-01', to: '2024-12-31', mode: 'daily' })
+    const response = await api.getTimeEntries({ clientId: clientId, from: startDate, to: endDate, mode: 'daily' })
 
     if (response === null) {
       logout(); return []
@@ -77,7 +79,7 @@ export default function MainView() {
         entryId: entry.EntryId
       }
     })
-  }, [logout])
+  }, [logout, startDate, endDate])
 
   /**
    * Refresh the list of time entries for all clients
@@ -108,6 +110,11 @@ export default function MainView() {
 
     const api = new API()
     const response = await api.registerTime({ clientId: project, duration: hours, date: date.toISOString() })
+
+    if (response.error) {
+      console.error(response.error)
+      return
+    }
 
     await refreshTimeEntries()
   }, [refreshTimeEntries])
@@ -186,6 +193,11 @@ export default function MainView() {
     await refreshTimeEntries()
   }, [refreshTimeEntries])
 
+  const handleChangeDateRange = useCallback((from: string, to: string) => {
+    setStartDate(from)
+    setEndDate(to)
+  }, [])
+
   useEffect(() => {
     refreshClientList()
   }, [refreshClientList])
@@ -214,7 +226,11 @@ export default function MainView() {
         </section>
 
         <section className={styles.section}>
-          <TimeReportView registeredEntries={registeredEntries} onDelete={deleteEntry} />
+          <TimeReportView
+            registeredEntries={registeredEntries}
+            onDelete={deleteEntry}
+            onSetNewDateRange={handleChangeDateRange}
+          />
         </section>
       </div>
     </main>
