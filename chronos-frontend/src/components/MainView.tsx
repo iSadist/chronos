@@ -6,7 +6,7 @@ import { TimeReportView } from "@/components/TimeReportView"
 import { RegisteredEntry } from "@/common-types"
 import ClientListView from "@/components/ClientListView"
 import RegisterTimeView from "@/components/RegisterTimeView"
-import API, { DailyReportEntry } from "@/api"
+import API, { ErrorCode, ErrorResponse, DailyReportEntry } from "@/api"
 
 import styles from "../app/page.module.css"
 
@@ -59,26 +59,35 @@ export default function MainView() {
    * @param clientId The ID of the client to fetch time entries for
    * @returns An array of time entries for the client
    * */
-  const getEntriesForClient = useCallback(async (clientId: string) => {
+  const getEntriesForClient = useCallback(async (clientId: string): Promise<RegisteredEntry[]> => {
     const api = new API()
-    const response = await api.getTimeEntries({ clientId: clientId, from: startDate, to: endDate, mode: 'daily' })
 
-    if (response === null) {
-      logout(); return []
-    }
+    try {
+      const response = await api.getTimeEntries({ clientId: clientId, from: startDate, to: endDate, mode: 'daily' })
+  
+      if (response === null) {
+        return []
+      }
+  
+      if (!Array.isArray(response.data)) {
+        return []
+      }
+  
+      return response.data.map((entry: DailyReportEntry) => {
+        return {
+          hours: entry.Duration,
+          date: new Date(entry.Date),
+          project: entry.ClientId,
+          entryId: entry.EntryId
+        }
+      })
+    } catch(error) {
+      if ((error as ErrorResponse).code === ErrorCode.Unauthorized) {
+        logout()
+      }
 
-    if (!Array.isArray(response.data)) {
       return []
     }
-
-    return response.data.map((entry: DailyReportEntry) => {
-      return {
-        hours: entry.Duration,
-        date: new Date(entry.Date),
-        project: entry.ClientId,
-        entryId: entry.EntryId
-      }
-    })
   }, [logout, startDate, endDate])
 
   /**
@@ -125,18 +134,26 @@ export default function MainView() {
    * */
   const refreshClientList = useCallback(async () => {
     const api = new API()
-    const response = await api.getClients()
 
-    if (response === null) {
-      logout(); return
+    try {
+      const response = await api.getClients()
+  
+      if (response === null) {
+        return
+      }
+  
+      const items = response.map((item: string) => {
+        return { name: item, isUpdating: false }
+      })
+  
+      setItems(items)
+      setLoading(false)
+
+    } catch(error) {
+      if ((error as ErrorResponse).code === ErrorCode.Unauthorized) {
+        logout()
+      }
     }
-
-    const items = response.map((item: string) => {
-      return { name: item, isUpdating: false }
-    })
-
-    setItems(items)
-    setLoading(false)
   }, [logout])
 
   /**

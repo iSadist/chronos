@@ -25,10 +25,19 @@ export type DailyReportResponse = {
     data: number | Array<DailyReportEntry>
 }
 
+export enum ErrorCode {
+    Unknown = 0,
+    Unauthorized = 1
+}
+
+export type ErrorResponse = {
+    code: ErrorCode
+}
+
 class API {
     baseURL: string  = 'https://sfyij39l9a.execute-api.eu-north-1.amazonaws.com/dev'
 
-    async getClients(): Promise<[string] | null> {
+    async getClients(): Promise<(string[] | null)> {
         const path = `${this.baseURL}/clients`
         const parameters = {
             method: 'GET',
@@ -42,12 +51,16 @@ class API {
             const response = await fetch(path, parameters)
 
             if (response.status === 401) {
-                return Promise.resolve(null)
+                return Promise.reject({
+                    code: ErrorCode.Unauthorized
+                })
             }
 
             return response.json()
         } catch {
-            return Promise.resolve(null)
+            return Promise.reject({
+                code: ErrorCode.Unknown
+            })
         }
     }
 
@@ -68,12 +81,16 @@ class API {
             const response = await fetch(path, parameters)
 
             if (response.status === 401) {
-                return Promise.resolve(null)
+                return Promise.reject({
+                    code: ErrorCode.Unauthorized
+                })
             }
 
             return response.json()
         } catch {
-            return Promise.resolve(null)
+            return Promise.reject({
+                code: ErrorCode.Unknown
+            })
         }
     }
 
@@ -91,12 +108,16 @@ class API {
             const response = await fetch(path, parameters)
 
             if (response.status === 401) {
-                return Promise.resolve(null)
+                return Promise.reject({
+                    code: ErrorCode.Unauthorized
+                })
             }
 
             return response.json()
         } catch {
-            return Promise.resolve(null)
+            return Promise.reject({
+                code: ErrorCode.Unknown
+            })
         }
     }
 
@@ -126,12 +147,16 @@ class API {
             const response = await fetch(path, parameters)
 
             if (response.status === 401) {
-                return Promise.resolve(null)
+                return Promise.reject({
+                    code: ErrorCode.Unauthorized
+                })
             }
 
             return response.json()
         } catch {
-            return Promise.resolve(null)
+            return Promise.reject({
+                code: ErrorCode.Unknown
+            })
         }
     }
 
@@ -149,12 +174,16 @@ class API {
             const response = await fetch(path, parameters)
 
             if (response.status === 401) {
-                return Promise.resolve(null)
+                return Promise.reject({
+                    code: ErrorCode.Unauthorized
+                })
             }
 
             return response.json()
         } catch {
-            return Promise.resolve(null)
+            return Promise.reject({
+                code: ErrorCode.Unknown
+            })
         }
     }
 
@@ -180,12 +209,16 @@ class API {
             const response = await fetch(path, parameters)
 
             if (response.status === 401) {
-                return Promise.resolve(null)
+                return Promise.reject({
+                    code: ErrorCode.Unauthorized
+                })
             }
 
             return response.json()
         } catch {
-            return Promise.resolve(null)
+            return Promise.reject({
+                code: ErrorCode.Unknown
+            })
         }
     }
 }
