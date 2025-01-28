@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { RegisteredEntry } from "@/common-types"
 import { DeleteButton } from "@/components/Button"
+import { getEndOfMonth, getStartOfMonth, turnDateIntoString } from "@/utils/dates"
 
 import styles from "./TimeReport.module.css"
 
@@ -291,17 +292,13 @@ export function TimeReportView({ registeredEntries, onDelete, onSetNewDateRange 
     setReportStyle(event.target.value)
   }
 
-  function turnDateIntoString(date: Date) {
-    return date.toISOString().split('T')[0]
-  }
-
   useEffect(() => {
-    const oneYearAgo = new Date()
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
     const today = new Date()
-    setStartDate(oneYearAgo)
-    setEndDate(today)
-    onSetNewDateRange?.(turnDateIntoString(oneYearAgo), turnDateIntoString(today))
+    const startOfMonth = getStartOfMonth(today)
+    const endOfMonth = getEndOfMonth(today)
+    setStartDate(startOfMonth)
+    setEndDate(endOfMonth)
+    onSetNewDateRange?.(turnDateIntoString(startOfMonth), turnDateIntoString(endOfMonth))
   }, [onSetNewDateRange])
 
   const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
