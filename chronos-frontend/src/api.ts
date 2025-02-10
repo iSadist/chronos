@@ -5,7 +5,7 @@ type TimeEntry = {
 }
 
 type GetTimeEntriesProps = {
-    clientId: string
+    clientId: string | undefined
     from: string
     to: string
     mode: string
@@ -187,13 +187,25 @@ class API {
         }
     }
 
-    async getTimeEntries(props: GetTimeEntriesProps): Promise<DailyReportResponse | null> {
-        const queryParams = new URLSearchParams({
+    getTimeEntriesQueryParams(props: GetTimeEntriesProps): string {
+        if (!props.clientId) {
+            return new URLSearchParams({
+                from: props.from,
+                to: props.to,
+                mode: props.mode,
+            }).toString()
+        }
+
+        return new URLSearchParams({
             clientId: props.clientId,
             from: props.from,
             to: props.to,
             mode: props.mode,
         }).toString()
+    }
+
+    async getTimeEntries(props: GetTimeEntriesProps): Promise<DailyReportResponse | null> {
+        const queryParams = this.getTimeEntriesQueryParams(props)
 
         const path = `${this.baseURL}/entries?${queryParams}`
 

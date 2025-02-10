@@ -59,7 +59,7 @@ export default function MainView() {
    * @param clientId The ID of the client to fetch time entries for
    * @returns An array of time entries for the client
    * */
-  const getEntriesForClient = useCallback(async (clientId: string): Promise<RegisteredEntry[]> => {
+  const getEntries = useCallback(async (clientId: string | undefined): Promise<RegisteredEntry[]> => {
     const api = new API()
 
     try {
@@ -67,6 +67,21 @@ export default function MainView() {
   
       if (response === null) {
         return []
+      }
+
+      // Response will be an object with arrays of entries for each client if no client ID is provided
+      if (!clientId) {
+        const allValues = Object.values(response) as DailyReportEntry[][]
+        const allEntries = allValues.flat()
+
+        return allEntries.map((entry: DailyReportEntry) => {
+          return {
+            hours: entry.Duration,
+            date: new Date(entry.Date),
+            project: entry.ClientId,
+            entryId: entry.EntryId
+          }
+        })
       }
   
       if (!Array.isArray(response.data)) {
@@ -95,15 +110,9 @@ export default function MainView() {
    * @returns void
    * */
   const refreshTimeEntries = useCallback(async () => {
-    const promises = items.map(async (item) => {
-      const entries = await getEntriesForClient(item.name)
-      return entries
-    })
-
-    const all = await Promise.all(promises)
-
-    setRegisteredEntries(all.flat())
-  }, [getEntriesForClient, items, setRegisteredEntries])
+    const allEntries = await getEntries(undefined)
+    setRegisteredEntries(allEntries.flat())
+  }, [getEntries, setRegisteredEntries])
 
   /**
    * Register time for a client

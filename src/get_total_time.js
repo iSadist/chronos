@@ -180,15 +180,6 @@ exports.handler = async (event) => {
   } = event.queryStringParameters || {};
   const userId = decodeTokenUserID(event.headers.authorization);
 
-  // The client ID is required
-  if (!clientId) {
-    return {
-      statusCode: 400,
-      headers: { ...CORS_HEADERS },
-      body: JSON.stringify({ message: 'Client ID is required.' }),
-    };
-  }
-
   // Option to how to get the time report (mode):
   // "daily": Hours day by day
   // 2. Total hours in a range of days
