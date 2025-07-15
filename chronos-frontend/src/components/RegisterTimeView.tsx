@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { Dayjs } from 'dayjs'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -55,8 +56,18 @@ function RegisterTimeView({
     setHours(newValue)
   }
 
-  function onSetDate (newDate: Date) {
-    setDate(newDate)
+  function onSetDate (newDate: Dayjs) {
+    const year = newDate.year()
+    const month = newDate.month()
+    const day = newDate.date()
+
+    const utc = new Date()
+    utc.setUTCFullYear(year)
+    utc.setUTCMonth(month)
+    utc.setUTCDate(day)
+    utc.setUTCHours(0, 0, 0, 0)
+
+    setDate(utc)
   }
 
   function onSetProject (event: React.ChangeEvent<HTMLSelectElement>) {
